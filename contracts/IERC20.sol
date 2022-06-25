@@ -4,7 +4,7 @@
 pragma solidity ^0.8.0;
 
 // Abstract contract for the full ERC 20 Token standard
-interface _Token {
+interface IERC20 {
     /* This is a slight change to the ERC20 base standard.
     function totalSupply() constant returns (uint256 supply);
     is replaced with:

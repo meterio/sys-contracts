@@ -28,13 +28,18 @@ abstract contract EIP712 {
     /* solhint-disable var-name-mixedcase */
     // Cache the domain separator as an immutable value, but also store the chain id that it corresponds to, in order to
     // invalidate the cached domain separator if the chain id changes.
-    bytes32 private immutable _CACHED_DOMAIN_SEPARATOR;
-    uint256 private immutable _CACHED_CHAIN_ID;
-    address private immutable _CACHED_THIS;
+    bytes32 private immutable _CACHED_DOMAIN_SEPARATOR =
+        0x5d0a451daeda5bd9f4095b6c09da34bdf3b91f4b8b8f60e3dd42d9d0d1ed1584;
+    uint256 private immutable _CACHED_CHAIN_ID = 0x52;
+    address private immutable _CACHED_THIS =
+        0x228ebBeE999c6a7ad74A6130E81b12f9Fe237Ba3;
 
-    bytes32 private immutable _HASHED_NAME;
-    bytes32 private immutable _HASHED_VERSION;
-    bytes32 private immutable _TYPE_HASH;
+    bytes32 private immutable _HASHED_NAME =
+        0x5e422fe6c718eb4b17d6b107d0b546cf8641493faaaddb68e483cd686c1d756c;
+    bytes32 private immutable _HASHED_VERSION =
+        0xe8245ed8f93ccf147bc8972ab6d5f8278ed994d647700daaa5b7ebde9370aa6f;
+    bytes32 private immutable _TYPE_HASH =
+        0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
 
     /* solhint-enable var-name-mixedcase */
 
@@ -50,28 +55,40 @@ abstract contract EIP712 {
      * NOTE: These parameters cannot be changed except through a xref:learn::upgrading-smart-contracts.adoc[smart
      * contract upgrade].
      */
-    constructor(string memory name, string memory version) {
-        bytes32 hashedName = keccak256(bytes(name));
-        bytes32 hashedVersion = keccak256(bytes(version));
-        bytes32 typeHash = keccak256(
-            "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
-        );
-        _HASHED_NAME = hashedName;
-        _HASHED_VERSION = hashedVersion;
-        _CACHED_CHAIN_ID = block.chainid;
-        _CACHED_DOMAIN_SEPARATOR = _buildDomainSeparator(typeHash, hashedName, hashedVersion);
-        _CACHED_THIS = address(this);
-        _TYPE_HASH = typeHash;
-    }
+    // NOTE: delibrately comment out since only constants are allowed in bytecode override
+    // constructor(string memory name, string memory version) {
+    //     bytes32 hashedName = keccak256(bytes(name));
+    //     bytes32 hashedVersion = keccak256(bytes(version));
+    //     bytes32 typeHash = keccak256(
+    //         "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
+    //     );
+    //     _HASHED_NAME = hashedName;
+    //     _HASHED_VERSION = hashedVersion;
+    //     _CACHED_CHAIN_ID = block.chainid;
+    //     _CACHED_DOMAIN_SEPARATOR = _buildDomainSeparator(
+    //         typeHash,
+    //         hashedName,
+    //         hashedVersion
+    //     );
+    //     _CACHED_THIS = address(this);
+    //     _TYPE_HASH = typeHash;
+    // }
 
     /**
      * @dev Returns the domain separator for the current chain.
      */
     function _domainSeparatorV4() internal view returns (bytes32) {
-        if (address(this) == _CACHED_THIS && block.chainid == _CACHED_CHAIN_ID) {
+        if (
+            address(this) == _CACHED_THIS && block.chainid == _CACHED_CHAIN_ID
+        ) {
             return _CACHED_DOMAIN_SEPARATOR;
         } else {
-            return _buildDomainSeparator(_TYPE_HASH, _HASHED_NAME, _HASHED_VERSION);
+            return
+                _buildDomainSeparator(
+                    _TYPE_HASH,
+                    _HASHED_NAME,
+                    _HASHED_VERSION
+                );
         }
     }
 
@@ -80,7 +97,16 @@ abstract contract EIP712 {
         bytes32 nameHash,
         bytes32 versionHash
     ) private view returns (bytes32) {
-        return keccak256(abi.encode(typeHash, nameHash, versionHash, block.chainid, address(this)));
+        return
+            keccak256(
+                abi.encode(
+                    typeHash,
+                    nameHash,
+                    versionHash,
+                    block.chainid,
+                    address(this)
+                )
+            );
     }
 
     /**
@@ -98,7 +124,12 @@ abstract contract EIP712 {
      * address signer = ECDSA.recover(digest, signature);
      * ```
      */
-    function _hashTypedDataV4(bytes32 structHash) internal view virtual returns (bytes32) {
+    function _hashTypedDataV4(bytes32 structHash)
+        internal
+        view
+        virtual
+        returns (bytes32)
+    {
         return ECDSA.toTypedDataHash(_domainSeparatorV4(), structHash);
     }
 }
