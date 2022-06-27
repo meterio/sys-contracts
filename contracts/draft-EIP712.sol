@@ -28,17 +28,17 @@ abstract contract EIP712 {
     /* solhint-disable var-name-mixedcase */
     // Cache the domain separator as an immutable value, but also store the chain id that it corresponds to, in order to
     // invalidate the cached domain separator if the chain id changes.
-    bytes32 private immutable _CACHED_DOMAIN_SEPARATOR =
+    bytes32 public constant _CACHED_DOMAIN_SEPARATOR =
         0x5d0a451daeda5bd9f4095b6c09da34bdf3b91f4b8b8f60e3dd42d9d0d1ed1584;
-    uint256 private immutable _CACHED_CHAIN_ID = 0x52;
-    address private immutable _CACHED_THIS =
+    uint256 public constant _CACHED_CHAIN_ID = 0x52;
+    address public constant _CACHED_THIS =
         0x228ebBeE999c6a7ad74A6130E81b12f9Fe237Ba3;
 
-    bytes32 private immutable _HASHED_NAME =
+    bytes32 public constant _HASHED_NAME =
         0x5e422fe6c718eb4b17d6b107d0b546cf8641493faaaddb68e483cd686c1d756c;
-    bytes32 private immutable _HASHED_VERSION =
+    bytes32 public constant _HASHED_VERSION =
         0xe8245ed8f93ccf147bc8972ab6d5f8278ed994d647700daaa5b7ebde9370aa6f;
-    bytes32 private immutable _TYPE_HASH =
+    bytes32 public constant _TYPE_HASH =
         0x8b73c3c69bb8fe3d512ecc4cf759cc79239f7b179b0ffacaa9a75d522b39400f;
 
     /* solhint-enable var-name-mixedcase */

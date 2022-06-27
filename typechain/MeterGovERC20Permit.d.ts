@@ -23,7 +23,13 @@ import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 interface MeterGovERC20PermitInterface extends ethers.utils.Interface {
   functions: {
     "DOMAIN_SEPARATOR()": FunctionFragment;
+    "_CACHED_CHAIN_ID()": FunctionFragment;
+    "_CACHED_DOMAIN_SEPARATOR()": FunctionFragment;
+    "_CACHED_THIS()": FunctionFragment;
     "_CONST_PERMIT_TYPEHASH()": FunctionFragment;
+    "_HASHED_NAME()": FunctionFragment;
+    "_HASHED_VERSION()": FunctionFragment;
+    "_TYPE_HASH()": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
@@ -45,7 +51,31 @@ interface MeterGovERC20PermitInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "_CACHED_CHAIN_ID",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_CACHED_DOMAIN_SEPARATOR",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_CACHED_THIS",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "_CONST_PERMIT_TYPEHASH",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_HASHED_NAME",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_HASHED_VERSION",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_TYPE_HASH",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -95,9 +125,30 @@ interface MeterGovERC20PermitInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "_CACHED_CHAIN_ID",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_CACHED_DOMAIN_SEPARATOR",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_CACHED_THIS",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "_CONST_PERMIT_TYPEHASH",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "_HASHED_NAME",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_HASHED_VERSION",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "_TYPE_HASH", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
@@ -156,11 +207,59 @@ export class MeterGovERC20Permit extends Contract {
       0: string;
     }>;
 
+    _CACHED_CHAIN_ID(overrides?: CallOverrides): Promise<{
+      0: BigNumber;
+    }>;
+
+    "_CACHED_CHAIN_ID()"(overrides?: CallOverrides): Promise<{
+      0: BigNumber;
+    }>;
+
+    _CACHED_DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
+
+    "_CACHED_DOMAIN_SEPARATOR()"(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
+
+    _CACHED_THIS(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
+
+    "_CACHED_THIS()"(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
+
     _CONST_PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<{
       0: string;
     }>;
 
     "_CONST_PERMIT_TYPEHASH()"(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
+
+    _HASHED_NAME(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
+
+    "_HASHED_NAME()"(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
+
+    _HASHED_VERSION(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
+
+    "_HASHED_VERSION()"(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
+
+    _TYPE_HASH(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
+
+    "_TYPE_HASH()"(overrides?: CallOverrides): Promise<{
       0: string;
     }>;
 
@@ -343,9 +442,33 @@ export class MeterGovERC20Permit extends Contract {
 
   "DOMAIN_SEPARATOR()"(overrides?: CallOverrides): Promise<string>;
 
+  _CACHED_CHAIN_ID(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "_CACHED_CHAIN_ID()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+  _CACHED_DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
+
+  "_CACHED_DOMAIN_SEPARATOR()"(overrides?: CallOverrides): Promise<string>;
+
+  _CACHED_THIS(overrides?: CallOverrides): Promise<string>;
+
+  "_CACHED_THIS()"(overrides?: CallOverrides): Promise<string>;
+
   _CONST_PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
   "_CONST_PERMIT_TYPEHASH()"(overrides?: CallOverrides): Promise<string>;
+
+  _HASHED_NAME(overrides?: CallOverrides): Promise<string>;
+
+  "_HASHED_NAME()"(overrides?: CallOverrides): Promise<string>;
+
+  _HASHED_VERSION(overrides?: CallOverrides): Promise<string>;
+
+  "_HASHED_VERSION()"(overrides?: CallOverrides): Promise<string>;
+
+  _TYPE_HASH(overrides?: CallOverrides): Promise<string>;
+
+  "_TYPE_HASH()"(overrides?: CallOverrides): Promise<string>;
 
   allowance(
     _owner: string,
@@ -478,9 +601,33 @@ export class MeterGovERC20Permit extends Contract {
 
     "DOMAIN_SEPARATOR()"(overrides?: CallOverrides): Promise<string>;
 
+    _CACHED_CHAIN_ID(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "_CACHED_CHAIN_ID()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _CACHED_DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
+
+    "_CACHED_DOMAIN_SEPARATOR()"(overrides?: CallOverrides): Promise<string>;
+
+    _CACHED_THIS(overrides?: CallOverrides): Promise<string>;
+
+    "_CACHED_THIS()"(overrides?: CallOverrides): Promise<string>;
+
     _CONST_PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
     "_CONST_PERMIT_TYPEHASH()"(overrides?: CallOverrides): Promise<string>;
+
+    _HASHED_NAME(overrides?: CallOverrides): Promise<string>;
+
+    "_HASHED_NAME()"(overrides?: CallOverrides): Promise<string>;
+
+    _HASHED_VERSION(overrides?: CallOverrides): Promise<string>;
+
+    "_HASHED_VERSION()"(overrides?: CallOverrides): Promise<string>;
+
+    _TYPE_HASH(overrides?: CallOverrides): Promise<string>;
+
+    "_TYPE_HASH()"(overrides?: CallOverrides): Promise<string>;
 
     allowance(
       _owner: string,
@@ -628,9 +775,33 @@ export class MeterGovERC20Permit extends Contract {
 
     "DOMAIN_SEPARATOR()"(overrides?: CallOverrides): Promise<BigNumber>;
 
+    _CACHED_CHAIN_ID(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "_CACHED_CHAIN_ID()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _CACHED_DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "_CACHED_DOMAIN_SEPARATOR()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _CACHED_THIS(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "_CACHED_THIS()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     _CONST_PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<BigNumber>;
 
     "_CONST_PERMIT_TYPEHASH()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _HASHED_NAME(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "_HASHED_NAME()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _HASHED_VERSION(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "_HASHED_VERSION()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    _TYPE_HASH(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "_TYPE_HASH()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     allowance(
       _owner: string,
@@ -766,6 +937,24 @@ export class MeterGovERC20Permit extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    _CACHED_CHAIN_ID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "_CACHED_CHAIN_ID()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _CACHED_DOMAIN_SEPARATOR(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "_CACHED_DOMAIN_SEPARATOR()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _CACHED_THIS(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "_CACHED_THIS()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     _CONST_PERMIT_TYPEHASH(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -773,6 +962,20 @@ export class MeterGovERC20Permit extends Contract {
     "_CONST_PERMIT_TYPEHASH()"(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    _HASHED_NAME(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "_HASHED_NAME()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    _HASHED_VERSION(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "_HASHED_VERSION()"(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    _TYPE_HASH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "_TYPE_HASH()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     allowance(
       _owner: string,
