@@ -21,7 +21,7 @@
     "typescript": "^3.7.3"
   },
   "engines": {
-    "node": "^14.17.x",
+    "node": "^16.17.x",
     "npm": "^6.14.x"
   },
   "devDependencies": {}
