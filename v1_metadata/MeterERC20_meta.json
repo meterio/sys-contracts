@@ -1,0 +1,189 @@
+{
+  "compiler": { "version": "0.4.24+commit.e67f0147" },
+  "language": "Solidity",
+  "output": {
+    "abi": [
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "name",
+        "outputs": [{ "name": "", "type": "string" }],
+        "payable": false,
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          { "name": "_spender", "type": "address" },
+          { "name": "_value", "type": "uint256" }
+        ],
+        "name": "approve",
+        "outputs": [{ "name": "success", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "totalSupply",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          { "name": "_from", "type": "address" },
+          { "name": "_to", "type": "address" },
+          { "name": "_amount", "type": "uint256" }
+        ],
+        "name": "transferFrom",
+        "outputs": [{ "name": "success", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [{ "name": "", "type": "uint8" }],
+        "payable": false,
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [{ "name": "_owner", "type": "address" }],
+        "name": "balanceOf",
+        "outputs": [{ "name": "balance", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "symbol",
+        "outputs": [{ "name": "", "type": "string" }],
+        "payable": false,
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          { "name": "_to", "type": "address" },
+          { "name": "_amount", "type": "uint256" }
+        ],
+        "name": "transfer",
+        "outputs": [{ "name": "success", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          { "name": "_from", "type": "address" },
+          { "name": "_to", "type": "address" },
+          { "name": "_amount", "type": "uint256" }
+        ],
+        "name": "move",
+        "outputs": [{ "name": "success", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "totalBurned",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          { "name": "_owner", "type": "address" },
+          { "name": "_spender", "type": "address" }
+        ],
+        "name": "allowance",
+        "outputs": [{ "name": "remaining", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "name": "_from", "type": "address" },
+          { "indexed": true, "name": "_to", "type": "address" },
+          { "indexed": false, "name": "_value", "type": "uint256" }
+        ],
+        "name": "Transfer",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          { "indexed": true, "name": "_owner", "type": "address" },
+          { "indexed": true, "name": "_spender", "type": "address" },
+          { "indexed": false, "name": "_value", "type": "uint256" }
+        ],
+        "name": "Approval",
+        "type": "event"
+      }
+    ],
+    "devdoc": {
+      "methods": {},
+      "title": "Meter implements VIP180(ERC20) standard, to present Meter/ Meter Gov tokens."
+    },
+    "userdoc": {
+      "methods": {
+        "move(address,address,uint256)": {
+          "notice": "It's not VIP180(ERC20)'s standard method. It allows master of `_from` or `_from` itself to transfer `_amount` of energy to `_to`."
+        }
+      }
+    }
+  },
+  "settings": {
+    "compilationTarget": { "meter-erc20.sol": "MeterERC20" },
+    "evmVersion": "byzantium",
+    "libraries": {},
+    "optimizer": { "enabled": false, "runs": 200 },
+    "remappings": []
+  },
+  "sources": {
+    "imeternative.sol": {
+      "keccak256": "0xd8f4e5a195dbe2c961dbbf2f24b34c0b7e0837eef79013726832cce6d2b1d309",
+      "urls": [
+        "bzzr://b8b37e623c35efc368aa5e20a621dfa96310e532beec477b1e62c53c08783cf3"
+      ]
+    },
+    "meter-erc20.sol": {
+      "keccak256": "0xc83179a22daf1faf06c89657913f22176a2ea55bca12a85ebfb2f437323e1245",
+      "urls": [
+        "bzzr://16a0bb56b3fa18338dd3faa6a4e6a43d90b8f9bb0b5dba206fc4b4d881a9cfe4"
+      ]
+    },
+    "token.sol": {
+      "keccak256": "0xee5ed6bc492368db9b98c94181d3ed895ee57f8dd7e9024413432bc1e0bb94ca",
+      "urls": [
+        "bzzr://86b284c0732f23d15c3c6615f4c1d76ca7c610b2bc9b819ead818938a51ef293"
+      ]
+    }
+  },
+  "version": 1
+}
