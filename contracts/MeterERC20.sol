@@ -7,7 +7,7 @@
 pragma solidity ^0.8.0;
 
 import "./IERC20.sol";
-import "./IMeternative.sol";
+import "./IMeterNative.sol";
 
 /// @title Meter implements VIP180(ERC20) standard, to present Meter/ Meter Gov tokens.
 contract MeterERC20 is IERC20 {

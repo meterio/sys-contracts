@@ -7,7 +7,7 @@
 pragma solidity ^0.8.0;
 
 import "./IERC20.sol";
-import "./IMeternative.sol";
+import "./IMeterNative.sol";
 
 contract MeterGovERC20 is IERC20 {
     mapping(address => mapping(address => uint256)) allowed;
