@@ -29,19 +29,19 @@ contract StakingPool is Ownable{
         scriptEngine = ScriptEngine(scriptEngineAddr);
     }
 
-    function bucketOpen( address candidate, uint256 amount) public returns (bytes32){
+    function bucketOpen(address candidate, uint256 amount) public returns (bytes32){
         return scriptEngine.bucketOpen(candidate, amount);
     }
 
-    function bucketDeposit( bytes32 bucketID, uint256 amount) public {
+    function bucketDeposit(bytes32 bucketID, uint256 amount) public {
         return scriptEngine.bucketDeposit(bucketID, amount);
     }
 
-    function bucketWithdraw( bytes32 bucketID, uint256 amount, address recipient) public returns (bytes32 ){
+    function bucketWithdraw(bytes32 bucketID, uint256 amount, address recipient) public returns (bytes32 ){
         return scriptEngine.bucketWithdraw(bucketID, amount, recipient);
     }
 
-    function bucketClose( bytes32 bucketID) public {
+    function bucketClose(bytes32 bucketID) public {
         return scriptEngine.bucketClose(bucketID);
     }
     
