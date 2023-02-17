@@ -8,20 +8,7 @@ pragma solidity ^0.8.0;
  */
 import "./ScriptEngine.sol";
 
-contract Ownable {
-    address public owner;
-
-    modifier onlyOwner {
-        require(msg.sender == owner);
-        _;
-    }
-
-    function transferOwnership(address newOwner) onlyOwner public {
-        owner = newOwner;
-    }
-}
-
-contract SampleStakingPool is Ownable{
+contract SampleStakingPool{
     ScriptEngine scriptEngine = ScriptEngine(0x63726970742d656E67696E652D61646472657373);
 
     function bucketOpen(address candidate, uint256 amount) public returns (bytes32){
