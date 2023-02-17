@@ -21,13 +21,8 @@ contract Ownable {
     }
 }
 
-contract StakingPool is Ownable{
-    ScriptEngine scriptEngine;
-
-    constructor(address scriptEngineAddr){
-        owner = msg.sender;
-        scriptEngine = ScriptEngine(scriptEngineAddr);
-    }
+contract SampleStakingPool is Ownable{
+    ScriptEngine scriptEngine = ScriptEngine(0x63726970742d656E67696E652D61646472657373);
 
     function bucketOpen(address candidate, uint256 amount) public returns (bytes32){
         return scriptEngine.bucketOpen(candidate, amount);
@@ -44,5 +39,4 @@ contract StakingPool is Ownable{
     function bucketClose(bytes32 bucketID) public {
         return scriptEngine.bucketClose(bucketID);
     }
-    
 }
