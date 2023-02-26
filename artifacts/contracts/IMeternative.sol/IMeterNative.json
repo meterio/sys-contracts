@@ -4,6 +4,31 @@
   "sourceName": "contracts/IMeterNative.sol",
   "abi": [
     {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_address",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "_method",
+          "type": "string"
+        }
+      ],
+      "name": "MeterTrackerEvent",
+      "type": "event"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
