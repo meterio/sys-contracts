@@ -4,6 +4,8 @@
 pragma solidity ^0.8.0;
 
 interface IMeterNative {
+    event MeterTrackerEvent(address _address, uint256 _amount, string _method);
+    
     function native_mtr_totalSupply() external view returns (uint256);
 
     function native_mtr_totalBurned() external view returns (uint256);

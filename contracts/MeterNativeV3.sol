@@ -1,8 +1,9 @@
 pragma solidity ^0.8.0;
 
 import "./NewMeterNative.sol";
+import "./IMeterNativeV3.sol";
 
-contract MeterNativeV3 is NewMeterNative {
+contract MeterNativeV3 is NewMeterNative, IMeterNativeV3{
 
     constructor () { }
     
@@ -31,5 +32,6 @@ contract MeterNativeV3 is NewMeterNative {
      */
     function native_bucket_close(address owner, bytes32 bucketID) public pure returns (string memory){ }
     
+    function native_bucket_update_candidate(address owner, bytes32 bucketID, address newCandidateAddr) public pure returns (string memory) {}
 }
 

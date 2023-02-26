@@ -36,4 +36,9 @@ contract SampleStakingPool{
         require(poolBucketID!=bytes32(0), "pool is not initialized");
         return scriptEngine.bucketClose(poolBucketID);
     }
+
+    function updateCandidate(address newCandidateAddr) public{
+        require(poolBucketID!=bytes32(0), "pool is not initialized");
+        return scriptEngine.bucketUpdateCandidate(poolBucketID, newCandidateAddr);
+    }
 }

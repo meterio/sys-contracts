@@ -54,9 +54,16 @@ contract ScriptEngine  {
         string memory errMsg = _meterTracker.native_bucket_close(msg.sender, bucketID);
         require((keccak256(abi.encodePacked((errMsg))) == keccak256(abi.encodePacked(("")))), errMsg);
     }
+    /**
+     * this func set candidate for the designated bucket owned by msg.sender
+     * will revert if any error happens
+     */
+    function bucketUpdateCandidate(bytes32 bucketID, address newCandidateAddr) public{
+        string memory errMsg = _meterTracker.native_bucket_update_candidate(msg.sender, bucketID, newCandidateAddr);
+        require((keccak256(abi.encodePacked((errMsg))) == keccak256(abi.encodePacked(("")))), errMsg);
+    }
 
     function boundedMTRG() public view returns (uint256){
         return _meterTracker.native_mtrg_locked_get(msg.sender);
     }
-    
 }
