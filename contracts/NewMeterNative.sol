@@ -3,8 +3,6 @@ pragma solidity ^0.8.0;
 import "./IMeterNative.sol";
 
 contract NewMeterNative is IMeterNative {
-    event MeterTrackerEvent(address _address, uint256 _amount, string _method);
-
     constructor () payable {}
     
     // MTR related
