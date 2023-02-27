@@ -1,8 +1,11 @@
 import "hardhat-typechain";
 import "@nomiclabs/hardhat-ethers";
-import { task } from "hardhat/config";
-import { deployContract, compileSetting, getContract } from "./scripts/helper";
-import { MeterGovERC20Permit } from "./typechain";
+import "@nomiclabs/hardhat-waffle";
+import "@nomiclabs/hardhat-ethers";
+import "@nomiclabs/hardhat-web3";
+import "hardhat-deploy";
+import { compileSetting } from "./scripts/helper";
+// import { MeterGovERC20Permit } from "./typechain";
 
 const dotenv = require("dotenv");
 dotenv.config();
