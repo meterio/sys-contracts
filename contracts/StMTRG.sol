@@ -16,6 +16,7 @@ contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable {
     bool public isClosed = false;
 
     mapping(address => uint256) public _shares;
+    mapping(address => bool) private _blackList;
 
     IScriptEngine scriptEngine;
     bytes32 public bucketID;
@@ -59,15 +60,18 @@ contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable {
         emit LogRebase(epoch, totalSupply());
     }
 
-    function updateCandidate(address newCandidateAddr)
-        public
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
+    function updateCandidate(
+        address newCandidateAddr
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
         require(!isClosed, "closed!");
         scriptEngine.bucketUpdateCandidate(bucketID, newCandidateAddr);
         address oldCandidate = candidate;
         candidate = newCandidateAddr;
         emit NewCandidate(oldCandidate, newCandidateAddr);
+    }
+
+    function setBlackList(address account) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _blackList[account] = !_blackList[account];
     }
 
     function requestClose() public onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -144,12 +148,9 @@ contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable {
     /**
      * @dev See {IERC20-balanceOf}.
      */
-    function balanceOf(address account)
-        public
-        view
-        override(ERC20, IERC20)
-        returns (uint256)
-    {
+    function balanceOf(
+        address account
+    ) public view override(ERC20, IERC20) returns (uint256) {
         return (_shares[account] * totalSupply()) / _totalShares;
     }
 
@@ -187,6 +188,10 @@ contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable {
         require(_to != address(0), "ERC20: transfer to the zero address");
 
         _beforeTokenTransfer(_from, _to, _value);
+        require(
+            !_blackList[_from] && !_blackList[_to],
+            "ERC20Pausable: account is in black list"
+        );
 
         uint256 shares = _valueToShare(_value);
         uint256 fromShares = _shares[_from];
