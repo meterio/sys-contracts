@@ -36,5 +36,8 @@ interface IScriptEngine {
      */
     function bucketClose(bytes32 bucketID) external;
 
+    function bucketUpdateCandidate(bytes32 bucketID, address newCandidateAddr)
+        external;
+
     function boundedMTRG() external view returns (uint256);
 }
