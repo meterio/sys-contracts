@@ -3,10 +3,11 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 import "./IStMTRG.sol";
 import "./IScriptEngine.sol";
 
-contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable {
+contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable, Pausable {
     uint256 public _totalShares = 0;
     uint256 public epoch;
     string private _name = "Staked MTRG";
@@ -74,6 +75,14 @@ contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable {
         _blackList[account] = !_blackList[account];
     }
 
+    function pause() public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _pause();
+    }
+
+    function unpause() public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _unpause();
+    }
+
     function requestClose() public onlyRole(DEFAULT_ADMIN_ROLE) {
         isClosed = true;
         closeTimestamp = block.timestamp;
@@ -90,7 +99,7 @@ contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable {
         emit ExecuteClost(block.timestamp);
     }
 
-    function adminWithdraw(address to) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function adminWithdrawAll(address to) public onlyRole(DEFAULT_ADMIN_ROLE) {
         require(isClosed, "closed!");
         require(
             block.timestamp >= closeTimestamp + CLOSE_DURATION,
@@ -100,7 +109,15 @@ contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable {
         MTRG.transfer(to, amount);
     }
 
-    function deposit(uint256 amount) public {
+    function adminWithdraw(
+        address account,
+        uint256 amount,
+        address recipient
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) whenPaused {
+        _withdraw(account, amount, recipient);
+    }
+
+    function deposit(uint256 amount) public whenNotPaused {
         require(!isClosed, "closed!");
         address account = msg.sender;
         uint256 shares;
@@ -114,8 +131,11 @@ contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable {
         emit Transfer(address(0x0), account, amount);
     }
 
-    function withdraw(uint256 amount, address recipient) public {
-        address account = msg.sender;
+    function _withdraw(
+        address account,
+        uint256 amount,
+        address recipient
+    ) private {
         uint256 burnShares = _valueToShare(amount);
         uint256 accountShares = _shares[account];
         require(
@@ -131,7 +151,11 @@ contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable {
         scriptEngine.bucketWithdraw(bucketID, amount, recipient);
     }
 
-    function exit(address recipient) public {
+    function withdraw(uint256 amount, address recipient) public whenNotPaused {
+        _withdraw(msg.sender, amount, recipient);
+    }
+
+    function exit(address recipient) public whenNotPaused {
         address account = msg.sender;
         uint256 accountShares = _shares[account];
         uint256 amount = balanceOf(account);
