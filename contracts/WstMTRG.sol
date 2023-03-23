@@ -11,7 +11,9 @@ contract WstMTRG is ERC20Permit {
     /**
      * @param _stMTRG address of the StMTRG token to wrap
      */
-    constructor(IStMTRG _stMTRG)
+    constructor(
+        IStMTRG _stMTRG
+    )
         ERC20Permit("Wrapped liquid staked MTRG")
         ERC20("Wrapped liquid staked MTRG", "wstMTRG")
     {
@@ -58,11 +60,9 @@ contract WstMTRG is ERC20Permit {
      * @param _stMTRGAmount amount of stMTRG
      * @return Amount of wstMTRG for a given stMTRG amount
      */
-    function getWstMTRGByStMTRG(uint256 _stMTRGAmount)
-        external
-        view
-        returns (uint256)
-    {
+    function getWstMTRGByStMTRG(
+        uint256 _stMTRGAmount
+    ) external view returns (uint256) {
         return stMTRG.valueToShare(_stMTRGAmount);
     }
 
@@ -71,11 +71,9 @@ contract WstMTRG is ERC20Permit {
      * @param _wstMTRGAmount amount of wstMTRG
      * @return Amount of stMTRG for a given wstMTRG amount
      */
-    function getStMTRGByWstMTRG(uint256 _wstMTRGAmount)
-        external
-        view
-        returns (uint256)
-    {
+    function getStMTRGByWstMTRG(
+        uint256 _wstMTRGAmount
+    ) external view returns (uint256) {
         return stMTRG.shareToValue(_wstMTRGAmount);
     }
 

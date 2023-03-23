@@ -28,7 +28,8 @@ interface StMTRGInterface extends ethers.utils.Interface {
     "MTRG()": FunctionFragment;
     "_shares(address)": FunctionFragment;
     "_totalShares()": FunctionFragment;
-    "adminWithdraw(address)": FunctionFragment;
+    "adminWithdraw(address,uint256,address)": FunctionFragment;
+    "adminWithdrawAll(address)": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
@@ -51,17 +52,21 @@ interface StMTRGInterface extends ethers.utils.Interface {
     "isClosed()": FunctionFragment;
     "name()": FunctionFragment;
     "nonces(address)": FunctionFragment;
+    "pause()": FunctionFragment;
+    "paused()": FunctionFragment;
     "permit(address,address,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
     "rebase()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "requestClose()": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
+    "setBlackList(address)": FunctionFragment;
     "shareToValue(uint256)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
+    "unpause()": FunctionFragment;
     "updateCandidate(address)": FunctionFragment;
     "valueToShare(uint256)": FunctionFragment;
     "withdraw(uint256,address)": FunctionFragment;
@@ -87,6 +92,10 @@ interface StMTRGInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "adminWithdraw",
+    values: [string, BigNumberish, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "adminWithdrawAll",
     values: [string]
   ): string;
   encodeFunctionData(
@@ -150,6 +159,8 @@ interface StMTRGInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "isClosed", values?: undefined): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(functionFragment: "nonces", values: [string]): string;
+  encodeFunctionData(functionFragment: "pause", values?: undefined): string;
+  encodeFunctionData(functionFragment: "paused", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "permit",
     values: [
@@ -176,6 +187,10 @@ interface StMTRGInterface extends ethers.utils.Interface {
     values: [BytesLike, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "setBlackList",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "shareToValue",
     values: [BigNumberish]
   ): string;
@@ -196,6 +211,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
     functionFragment: "transferFrom",
     values: [string, string, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "updateCandidate",
     values: [string]
@@ -229,6 +245,10 @@ interface StMTRGInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "adminWithdraw",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "adminWithdrawAll",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
@@ -274,6 +294,8 @@ interface StMTRGInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "isClosed", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "nonces", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "permit", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "rebase", data: BytesLike): Result;
   decodeFunctionResult(
@@ -285,6 +307,10 @@ interface StMTRGInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setBlackList",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "shareToValue",
     data: BytesLike
@@ -303,6 +329,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
     functionFragment: "transferFrom",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "updateCandidate",
     data: BytesLike
@@ -318,22 +345,26 @@ interface StMTRGInterface extends ethers.utils.Interface {
     "ExecuteClost(uint256)": EventFragment;
     "LogRebase(uint256,uint256)": EventFragment;
     "NewCandidate(address,address)": EventFragment;
+    "Paused(address)": EventFragment;
     "RequestClost(uint256)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
+    "Unpaused(address)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ExecuteClost"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LogRebase"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewCandidate"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RequestClost"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
 }
 
 export class StMTRG extends Contract {
@@ -405,11 +436,25 @@ export class StMTRG extends Contract {
     }>;
 
     adminWithdraw(
+      account: string,
+      amount: BigNumberish,
+      recipient: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "adminWithdraw(address,uint256,address)"(
+      account: string,
+      amount: BigNumberish,
+      recipient: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    adminWithdrawAll(
       to: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    "adminWithdraw(address)"(
+    "adminWithdrawAll(address)"(
       to: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
@@ -650,6 +695,18 @@ export class StMTRG extends Contract {
       0: BigNumber;
     }>;
 
+    pause(overrides?: Overrides): Promise<ContractTransaction>;
+
+    "pause()"(overrides?: Overrides): Promise<ContractTransaction>;
+
+    paused(overrides?: CallOverrides): Promise<{
+      0: boolean;
+    }>;
+
+    "paused()"(overrides?: CallOverrides): Promise<{
+      0: boolean;
+    }>;
+
     permit(
       owner: string,
       spender: string,
@@ -700,6 +757,16 @@ export class StMTRG extends Contract {
 
     "revokeRole(bytes32,address)"(
       role: BytesLike,
+      account: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    setBlackList(
+      account: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "setBlackList(address)"(
       account: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
@@ -774,6 +841,10 @@ export class StMTRG extends Contract {
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
+    unpause(overrides?: Overrides): Promise<ContractTransaction>;
+
+    "unpause()"(overrides?: Overrides): Promise<ContractTransaction>;
+
     updateCandidate(
       newCandidateAddr: string,
       overrides?: Overrides
@@ -839,11 +910,25 @@ export class StMTRG extends Contract {
   "_totalShares()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   adminWithdraw(
+    account: string,
+    amount: BigNumberish,
+    recipient: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "adminWithdraw(address,uint256,address)"(
+    account: string,
+    amount: BigNumberish,
+    recipient: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  adminWithdrawAll(
     to: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  "adminWithdraw(address)"(
+  "adminWithdrawAll(address)"(
     to: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
@@ -1016,6 +1101,14 @@ export class StMTRG extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  pause(overrides?: Overrides): Promise<ContractTransaction>;
+
+  "pause()"(overrides?: Overrides): Promise<ContractTransaction>;
+
+  paused(overrides?: CallOverrides): Promise<boolean>;
+
+  "paused()"(overrides?: CallOverrides): Promise<boolean>;
+
   permit(
     owner: string,
     spender: string,
@@ -1066,6 +1159,16 @@ export class StMTRG extends Contract {
 
   "revokeRole(bytes32,address)"(
     role: BytesLike,
+    account: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  setBlackList(
+    account: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "setBlackList(address)"(
     account: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
@@ -1123,6 +1226,10 @@ export class StMTRG extends Contract {
     amount: BigNumberish,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
+
+  unpause(overrides?: Overrides): Promise<ContractTransaction>;
+
+  "unpause()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   updateCandidate(
     newCandidateAddr: string,
@@ -1184,9 +1291,23 @@ export class StMTRG extends Contract {
 
     "_totalShares()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    adminWithdraw(to: string, overrides?: CallOverrides): Promise<void>;
+    adminWithdraw(
+      account: string,
+      amount: BigNumberish,
+      recipient: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    "adminWithdraw(address)"(
+    "adminWithdraw(address,uint256,address)"(
+      account: string,
+      amount: BigNumberish,
+      recipient: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    adminWithdrawAll(to: string, overrides?: CallOverrides): Promise<void>;
+
+    "adminWithdrawAll(address)"(
       to: string,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1356,6 +1477,14 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    pause(overrides?: CallOverrides): Promise<void>;
+
+    "pause()"(overrides?: CallOverrides): Promise<void>;
+
+    paused(overrides?: CallOverrides): Promise<boolean>;
+
+    "paused()"(overrides?: CallOverrides): Promise<boolean>;
+
     permit(
       owner: string,
       spender: string,
@@ -1406,6 +1535,13 @@ export class StMTRG extends Contract {
 
     "revokeRole(bytes32,address)"(
       role: BytesLike,
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setBlackList(account: string, overrides?: CallOverrides): Promise<void>;
+
+    "setBlackList(address)"(
       account: string,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1464,6 +1600,10 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    unpause(overrides?: CallOverrides): Promise<void>;
+
+    "unpause()"(overrides?: CallOverrides): Promise<void>;
+
     updateCandidate(
       newCandidateAddr: string,
       overrides?: CallOverrides
@@ -1510,6 +1650,8 @@ export class StMTRG extends Contract {
 
     NewCandidate(oldCandidate: null, newCandidate: null): EventFilter;
 
+    Paused(account: null): EventFilter;
+
     RequestClost(timestamp: null): EventFilter;
 
     RoleAdminChanged(
@@ -1531,6 +1673,8 @@ export class StMTRG extends Contract {
     ): EventFilter;
 
     Transfer(from: string | null, to: string | null, value: null): EventFilter;
+
+    Unpaused(account: null): EventFilter;
   };
 
   estimateGas: {
@@ -1561,9 +1705,23 @@ export class StMTRG extends Contract {
 
     "_totalShares()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    adminWithdraw(to: string, overrides?: Overrides): Promise<BigNumber>;
+    adminWithdraw(
+      account: string,
+      amount: BigNumberish,
+      recipient: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
 
-    "adminWithdraw(address)"(
+    "adminWithdraw(address,uint256,address)"(
+      account: string,
+      amount: BigNumberish,
+      recipient: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    adminWithdrawAll(to: string, overrides?: Overrides): Promise<BigNumber>;
+
+    "adminWithdrawAll(address)"(
       to: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
@@ -1736,6 +1894,14 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    pause(overrides?: Overrides): Promise<BigNumber>;
+
+    "pause()"(overrides?: Overrides): Promise<BigNumber>;
+
+    paused(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "paused()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     permit(
       owner: string,
       spender: string,
@@ -1786,6 +1952,13 @@ export class StMTRG extends Contract {
 
     "revokeRole(bytes32,address)"(
       role: BytesLike,
+      account: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    setBlackList(account: string, overrides?: Overrides): Promise<BigNumber>;
+
+    "setBlackList(address)"(
       account: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
@@ -1843,6 +2016,10 @@ export class StMTRG extends Contract {
       amount: BigNumberish,
       overrides?: Overrides
     ): Promise<BigNumber>;
+
+    unpause(overrides?: Overrides): Promise<BigNumber>;
+
+    "unpause()"(overrides?: Overrides): Promise<BigNumber>;
 
     updateCandidate(
       newCandidateAddr: string,
@@ -1917,11 +2094,25 @@ export class StMTRG extends Contract {
     "_totalShares()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     adminWithdraw(
+      account: string,
+      amount: BigNumberish,
+      recipient: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "adminWithdraw(address,uint256,address)"(
+      account: string,
+      amount: BigNumberish,
+      recipient: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    adminWithdrawAll(
       to: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    "adminWithdraw(address)"(
+    "adminWithdrawAll(address)"(
       to: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
@@ -2108,6 +2299,14 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    pause(overrides?: Overrides): Promise<PopulatedTransaction>;
+
+    "pause()"(overrides?: Overrides): Promise<PopulatedTransaction>;
+
+    paused(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "paused()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     permit(
       owner: string,
       spender: string,
@@ -2158,6 +2357,16 @@ export class StMTRG extends Contract {
 
     "revokeRole(bytes32,address)"(
       role: BytesLike,
+      account: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    setBlackList(
+      account: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "setBlackList(address)"(
       account: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
@@ -2215,6 +2424,10 @@ export class StMTRG extends Contract {
       amount: BigNumberish,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
+
+    unpause(overrides?: Overrides): Promise<PopulatedTransaction>;
+
+    "unpause()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     updateCandidate(
       newCandidateAddr: string,
