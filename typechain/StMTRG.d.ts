@@ -28,6 +28,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
     "MTRG()": FunctionFragment;
     "_shares(address)": FunctionFragment;
     "_totalShares()": FunctionFragment;
+    "adminInit()": FunctionFragment;
     "adminWithdraw(address,uint256,address)": FunctionFragment;
     "adminWithdrawAll(address)": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
@@ -48,7 +49,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
-    "initialize()": FunctionFragment;
+    "initialize(address,address,address,address)": FunctionFragment;
     "isClosed()": FunctionFragment;
     "name()": FunctionFragment;
     "nonces(address)": FunctionFragment;
@@ -69,6 +70,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
     "unpause()": FunctionFragment;
     "updateCandidate(address)": FunctionFragment;
     "valueToShare(uint256)": FunctionFragment;
+    "valueToShare2(uint256)": FunctionFragment;
     "withdraw(uint256,address)": FunctionFragment;
   };
 
@@ -90,6 +92,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
     functionFragment: "_totalShares",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "adminInit", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "adminWithdraw",
     values: [string, BigNumberish, string]
@@ -154,7 +157,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values?: undefined
+    values: [string, string, string, string]
   ): string;
   encodeFunctionData(functionFragment: "isClosed", values?: undefined): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
@@ -221,6 +224,10 @@ interface StMTRGInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "valueToShare2",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "withdraw",
     values: [BigNumberish, string]
   ): string;
@@ -243,6 +250,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
     functionFragment: "_totalShares",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "adminInit", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "adminWithdraw",
     data: BytesLike
@@ -338,11 +346,16 @@ interface StMTRGInterface extends ethers.utils.Interface {
     functionFragment: "valueToShare",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "valueToShare2",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
     "ExecuteClost(uint256)": EventFragment;
+    "Initialized(uint8)": EventFragment;
     "LogRebase(uint256,uint256)": EventFragment;
     "NewCandidate(address,address)": EventFragment;
     "Paused(address)": EventFragment;
@@ -356,6 +369,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ExecuteClost"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LogRebase"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewCandidate"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
@@ -434,6 +448,10 @@ export class StMTRG extends Contract {
     "_totalShares()"(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
+
+    adminInit(overrides?: Overrides): Promise<ContractTransaction>;
+
+    "adminInit()"(overrides?: Overrides): Promise<ContractTransaction>;
 
     adminWithdraw(
       account: string,
@@ -661,9 +679,21 @@ export class StMTRG extends Contract {
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    initialize(overrides?: Overrides): Promise<ContractTransaction>;
+    initialize(
+      admin: string,
+      _MTRG: string,
+      scriptEngineAddr: string,
+      _candidate: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-    "initialize()"(overrides?: Overrides): Promise<ContractTransaction>;
+    "initialize(address,address,address,address)"(
+      admin: string,
+      _MTRG: string,
+      scriptEngineAddr: string,
+      _candidate: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
     isClosed(overrides?: CallOverrides): Promise<{
       0: boolean;
@@ -869,6 +899,20 @@ export class StMTRG extends Contract {
       0: BigNumber;
     }>;
 
+    valueToShare2(
+      _value: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
+
+    "valueToShare2(uint256)"(
+      _value: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
+
     withdraw(
       amount: BigNumberish,
       recipient: string,
@@ -908,6 +952,10 @@ export class StMTRG extends Contract {
   _totalShares(overrides?: CallOverrides): Promise<BigNumber>;
 
   "_totalShares()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+  adminInit(overrides?: Overrides): Promise<ContractTransaction>;
+
+  "adminInit()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   adminWithdraw(
     account: string,
@@ -1082,9 +1130,21 @@ export class StMTRG extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  initialize(overrides?: Overrides): Promise<ContractTransaction>;
+  initialize(
+    admin: string,
+    _MTRG: string,
+    scriptEngineAddr: string,
+    _candidate: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
-  "initialize()"(overrides?: Overrides): Promise<ContractTransaction>;
+  "initialize(address,address,address,address)"(
+    admin: string,
+    _MTRG: string,
+    scriptEngineAddr: string,
+    _candidate: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
   isClosed(overrides?: CallOverrides): Promise<boolean>;
 
@@ -1251,6 +1311,16 @@ export class StMTRG extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  valueToShare2(
+    _value: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  "valueToShare2(uint256)"(
+    _value: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   withdraw(
     amount: BigNumberish,
     recipient: string,
@@ -1290,6 +1360,10 @@ export class StMTRG extends Contract {
     _totalShares(overrides?: CallOverrides): Promise<BigNumber>;
 
     "_totalShares()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    adminInit(overrides?: CallOverrides): Promise<void>;
+
+    "adminInit()"(overrides?: CallOverrides): Promise<void>;
 
     adminWithdraw(
       account: string,
@@ -1458,9 +1532,21 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    initialize(overrides?: CallOverrides): Promise<void>;
+    initialize(
+      admin: string,
+      _MTRG: string,
+      scriptEngineAddr: string,
+      _candidate: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
-    "initialize()"(overrides?: CallOverrides): Promise<void>;
+    "initialize(address,address,address,address)"(
+      admin: string,
+      _MTRG: string,
+      scriptEngineAddr: string,
+      _candidate: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     isClosed(overrides?: CallOverrides): Promise<boolean>;
 
@@ -1624,6 +1710,16 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    valueToShare2(
+      _value: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "valueToShare2(uint256)"(
+      _value: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     withdraw(
       amount: BigNumberish,
       recipient: string,
@@ -1645,6 +1741,8 @@ export class StMTRG extends Contract {
     ): EventFilter;
 
     ExecuteClost(timestamp: null): EventFilter;
+
+    Initialized(version: null): EventFilter;
 
     LogRebase(epoch: BigNumberish | null, totalSupply: null): EventFilter;
 
@@ -1704,6 +1802,10 @@ export class StMTRG extends Contract {
     _totalShares(overrides?: CallOverrides): Promise<BigNumber>;
 
     "_totalShares()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    adminInit(overrides?: Overrides): Promise<BigNumber>;
+
+    "adminInit()"(overrides?: Overrides): Promise<BigNumber>;
 
     adminWithdraw(
       account: string,
@@ -1875,9 +1977,21 @@ export class StMTRG extends Contract {
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    initialize(overrides?: Overrides): Promise<BigNumber>;
+    initialize(
+      admin: string,
+      _MTRG: string,
+      scriptEngineAddr: string,
+      _candidate: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
 
-    "initialize()"(overrides?: Overrides): Promise<BigNumber>;
+    "initialize(address,address,address,address)"(
+      admin: string,
+      _MTRG: string,
+      scriptEngineAddr: string,
+      _candidate: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
 
     isClosed(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -2041,6 +2155,16 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    valueToShare2(
+      _value: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "valueToShare2(uint256)"(
+      _value: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     withdraw(
       amount: BigNumberish,
       recipient: string,
@@ -2092,6 +2216,10 @@ export class StMTRG extends Contract {
     _totalShares(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "_totalShares()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    adminInit(overrides?: Overrides): Promise<PopulatedTransaction>;
+
+    "adminInit()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     adminWithdraw(
       account: string,
@@ -2277,9 +2405,21 @@ export class StMTRG extends Contract {
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    initialize(overrides?: Overrides): Promise<PopulatedTransaction>;
+    initialize(
+      admin: string,
+      _MTRG: string,
+      scriptEngineAddr: string,
+      _candidate: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
 
-    "initialize()"(overrides?: Overrides): Promise<PopulatedTransaction>;
+    "initialize(address,address,address,address)"(
+      admin: string,
+      _MTRG: string,
+      scriptEngineAddr: string,
+      _candidate: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
 
     isClosed(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -2445,6 +2585,16 @@ export class StMTRG extends Contract {
     ): Promise<PopulatedTransaction>;
 
     "valueToShare(uint256)"(
+      _value: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    valueToShare2(
+      _value: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "valueToShare2(uint256)"(
       _value: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

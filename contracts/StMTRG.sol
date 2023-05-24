@@ -1,13 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
-import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "./IStMTRG.sol";
 import "./IScriptEngine.sol";
+import "./WadRayMath.sol";
 
-contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable, Pausable {
+contract StMTRG is
+    IStMTRG,
+    ERC20PermitUpgradeable,
+    AccessControlEnumerableUpgradeable,
+    PausableUpgradeable
+{
+    using WadRayMath for uint256;
     uint256 public _totalShares = 0;
     uint256 public epoch;
     string private _name = "Staked MTRG";
@@ -22,24 +29,28 @@ contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable, Pausable {
     IScriptEngine scriptEngine;
     bytes32 public bucketID;
     address public candidate;
-    IERC20 public MTRG;
+    IERC20Upgradeable public MTRG;
     event LogRebase(uint256 indexed epoch, uint256 totalSupply);
     event NewCandidate(address oldCandidate, address newCandidate);
     event RequestClost(uint256 timestamp);
     event ExecuteClost(uint256 timestamp);
 
-    constructor(
-        IERC20 _MTRG,
+    function initialize(
+        address admin,
+        IERC20Upgradeable _MTRG,
         address scriptEngineAddr,
         address _candidate
-    ) ERC20Permit(_name) ERC20(_name, _symbol) {
-        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    ) public initializer {
+        __ERC20Permit_init(_name);
+        __ERC20_init(_name, _symbol);
+        __Pausable_init();
+        _setupRole(DEFAULT_ADMIN_ROLE, admin);
         scriptEngine = IScriptEngine(scriptEngineAddr);
         candidate = _candidate;
         MTRG = _MTRG;
     }
 
-    function initialize() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function adminInit() external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(!isClosed, "closed!");
         require(_totalShares == 0, "totalShares != 0");
         address account = msg.sender;
@@ -47,7 +58,7 @@ contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable, Pausable {
         MTRG.transferFrom(account, address(this), amount);
         bucketID = scriptEngine.bucketOpen(candidate, amount);
         _shares[account] += amount;
-        _totalShares += amount;
+        _totalShares += amount.wadToRay();
         emit Transfer(address(0x0), account, amount);
     }
 
@@ -127,7 +138,7 @@ contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable, Pausable {
         shares = _valueToShare(amount);
         scriptEngine.bucketDeposit(bucketID, amount);
         _shares[account] += shares;
-        _totalShares += shares;
+        _totalShares += shares.wadToRay();
         emit Transfer(address(0x0), account, amount);
     }
 
@@ -144,9 +155,8 @@ contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable, Pausable {
         );
         unchecked {
             _shares[account] = accountShares - burnShares;
-            _totalShares -= burnShares;
+            _totalShares -= burnShares.wadToRay();
         }
-
         emit Transfer(account, address(0), amount);
         scriptEngine.bucketWithdraw(bucketID, amount, recipient);
     }
@@ -162,7 +172,7 @@ contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable, Pausable {
 
         unchecked {
             _shares[account] = 0;
-            _totalShares -= accountShares;
+            _totalShares -= accountShares.wadToRay();
         }
 
         emit Transfer(account, address(0), amount);
@@ -172,27 +182,19 @@ contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable, Pausable {
     /**
      * @dev See {IERC20-balanceOf}.
      */
-    function balanceOf(
-        address account
-    ) public view override(ERC20, IERC20) returns (uint256) {
-        return (_shares[account] * totalSupply()) / _totalShares;
+    function balanceOf(address account) public view override returns (uint256) {
+        return shareToValue(_shares[account]);
     }
 
     /**
      * @dev See {IERC20-totalSupply}.
      */
-
-    function totalSupply()
-        public
-        view
-        override(ERC20, IERC20)
-        returns (uint256)
-    {
+    function totalSupply() public view override returns (uint256) {
         return scriptEngine.boundedMTRG();
     }
 
     function shareToValue(uint256 _share) public view returns (uint256) {
-        return (_share * totalSupply()) / _totalShares;
+        return _share.wadToRay().rayMul(totalSupply()).rayDiv(_totalShares);
     }
 
     function valueToShare(uint256 _value) public view returns (uint256) {
@@ -200,7 +202,7 @@ contract StMTRG is IStMTRG, ERC20Permit, AccessControlEnumerable, Pausable {
     }
 
     function _valueToShare(uint256 _value) private view returns (uint256) {
-        return (_value * _totalShares) / totalSupply();
+        return _value.rayMul(_totalShares).rayDiv(totalSupply()).rayToWad();
     }
 
     function _transfer(

@@ -31,6 +31,7 @@ interface WstMTRGInterface extends ethers.utils.Interface {
     "getStMTRGByWstMTRG(uint256)": FunctionFragment;
     "getWstMTRGByStMTRG(uint256)": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
+    "initialize(address)": FunctionFragment;
     "name()": FunctionFragment;
     "nonces(address)": FunctionFragment;
     "permit(address,address,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
@@ -75,6 +76,7 @@ interface WstMTRGInterface extends ethers.utils.Interface {
     functionFragment: "increaseAllowance",
     values: [string, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "initialize", values: [string]): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(functionFragment: "nonces", values: [string]): string;
   encodeFunctionData(
@@ -141,6 +143,7 @@ interface WstMTRGInterface extends ethers.utils.Interface {
     functionFragment: "increaseAllowance",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "nonces", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "permit", data: BytesLike): Result;
@@ -168,10 +171,12 @@ interface WstMTRGInterface extends ethers.utils.Interface {
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
+    "Initialized(uint8)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
@@ -296,6 +301,16 @@ export class WstMTRG extends Contract {
     "increaseAllowance(address,uint256)"(
       spender: string,
       addedValue: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    initialize(
+      _stMTRG: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "initialize(address)"(
+      _stMTRG: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
@@ -513,6 +528,16 @@ export class WstMTRG extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
+  initialize(
+    _stMTRG: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "initialize(address)"(
+    _stMTRG: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
   name(overrides?: CallOverrides): Promise<string>;
 
   "name()"(overrides?: CallOverrides): Promise<string>;
@@ -696,6 +721,13 @@ export class WstMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    initialize(_stMTRG: string, overrides?: CallOverrides): Promise<void>;
+
+    "initialize(address)"(
+      _stMTRG: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     name(overrides?: CallOverrides): Promise<string>;
 
     "name()"(overrides?: CallOverrides): Promise<string>;
@@ -803,6 +835,8 @@ export class WstMTRG extends Contract {
       value: null
     ): EventFilter;
 
+    Initialized(version: null): EventFilter;
+
     Transfer(from: string | null, to: string | null, value: null): EventFilter;
   };
 
@@ -887,6 +921,13 @@ export class WstMTRG extends Contract {
     "increaseAllowance(address,uint256)"(
       spender: string,
       addedValue: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    initialize(_stMTRG: string, overrides?: Overrides): Promise<BigNumber>;
+
+    "initialize(address)"(
+      _stMTRG: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
@@ -1076,6 +1117,16 @@ export class WstMTRG extends Contract {
     "increaseAllowance(address,uint256)"(
       spender: string,
       addedValue: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    initialize(
+      _stMTRG: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "initialize(address)"(
+      _stMTRG: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 

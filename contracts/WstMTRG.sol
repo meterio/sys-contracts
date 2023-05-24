@@ -2,21 +2,18 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/draft-ERC20PermitUpgradeable.sol";
 import "./IStMTRG.sol";
 
-contract WstMTRG is ERC20Permit {
-    IStMTRG public stMTRG;
+contract WstMTRG is ERC20PermitUpgradeable {
+    address public stMTRG;
 
     /**
      * @param _stMTRG address of the StMTRG token to wrap
      */
-    constructor(
-        IStMTRG _stMTRG
-    )
-        ERC20Permit("Wrapped liquid staked MTRG")
-        ERC20("Wrapped liquid staked MTRG", "wstMTRG")
-    {
+    function initialize(address _stMTRG) public initializer {
+        __ERC20Permit_init("Wrapped liquid staked MTRG");
+        __ERC20_init("Wrapped liquid staked MTRG", "wstMTRG");
         stMTRG = _stMTRG;
     }
 
@@ -33,9 +30,13 @@ contract WstMTRG is ERC20Permit {
      */
     function wrap(uint256 _stMTRGAmount) external returns (uint256) {
         require(_stMTRGAmount > 0, "wstMTRG: can't wrap zero stMTRG");
-        uint256 wstMTRGAmount = stMTRG.valueToShare(_stMTRGAmount);
+        uint256 wstMTRGAmount = IStMTRG(stMTRG).valueToShare(_stMTRGAmount);
         _mint(msg.sender, wstMTRGAmount);
-        stMTRG.transferFrom(msg.sender, address(this), _stMTRGAmount);
+        IERC20Upgradeable(stMTRG).transferFrom(
+            msg.sender,
+            address(this),
+            _stMTRGAmount
+        );
         return wstMTRGAmount;
     }
 
@@ -49,9 +50,9 @@ contract WstMTRG is ERC20Permit {
      */
     function unwrap(uint256 _wstMTRGAmount) external returns (uint256) {
         require(_wstMTRGAmount > 0, "wstMTRG: zero amount unwrap not allowed");
-        uint256 stMTRGAmount = stMTRG.shareToValue(_wstMTRGAmount);
+        uint256 stMTRGAmount = IStMTRG(stMTRG).shareToValue(_wstMTRGAmount);
         _burn(msg.sender, _wstMTRGAmount);
-        stMTRG.transfer(msg.sender, stMTRGAmount);
+        IERC20Upgradeable(stMTRG).transfer(msg.sender, stMTRGAmount);
         return stMTRGAmount;
     }
 
@@ -63,7 +64,7 @@ contract WstMTRG is ERC20Permit {
     function getWstMTRGByStMTRG(
         uint256 _stMTRGAmount
     ) external view returns (uint256) {
-        return stMTRG.valueToShare(_stMTRGAmount);
+        return IStMTRG(stMTRG).valueToShare(_stMTRGAmount);
     }
 
     /**
@@ -74,7 +75,7 @@ contract WstMTRG is ERC20Permit {
     function getStMTRGByWstMTRG(
         uint256 _wstMTRGAmount
     ) external view returns (uint256) {
-        return stMTRG.shareToValue(_wstMTRGAmount);
+        return IStMTRG(stMTRG).shareToValue(_wstMTRGAmount);
     }
 
     /**
@@ -82,7 +83,7 @@ contract WstMTRG is ERC20Permit {
      * @return Amount of stMTRG for 1 wstMTRG
      */
     function stMTRGPerToken() external view returns (uint256) {
-        return stMTRG.shareToValue(1 ether);
+        return IStMTRG(stMTRG).shareToValue(1 ether);
     }
 
     /**
@@ -90,6 +91,6 @@ contract WstMTRG is ERC20Permit {
      * @return Amount of wstMTRG for a 1 stMTRG
      */
     function tokensPerStMTRG() external view returns (uint256) {
-        return stMTRG.valueToShare(1 ether);
+        return IStMTRG(stMTRG).valueToShare(1 ether);
     }
 }
