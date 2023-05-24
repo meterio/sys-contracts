@@ -70,7 +70,6 @@ interface StMTRGInterface extends ethers.utils.Interface {
     "unpause()": FunctionFragment;
     "updateCandidate(address)": FunctionFragment;
     "valueToShare(uint256)": FunctionFragment;
-    "valueToShare2(uint256)": FunctionFragment;
     "withdraw(uint256,address)": FunctionFragment;
   };
 
@@ -224,10 +223,6 @@ interface StMTRGInterface extends ethers.utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "valueToShare2",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "withdraw",
     values: [BigNumberish, string]
   ): string;
@@ -344,10 +339,6 @@ interface StMTRGInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "valueToShare",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "valueToShare2",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
@@ -899,20 +890,6 @@ export class StMTRG extends Contract {
       0: BigNumber;
     }>;
 
-    valueToShare2(
-      _value: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "valueToShare2(uint256)"(
-      _value: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
     withdraw(
       amount: BigNumberish,
       recipient: string,
@@ -1311,16 +1288,6 @@ export class StMTRG extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  valueToShare2(
-    _value: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  "valueToShare2(uint256)"(
-    _value: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   withdraw(
     amount: BigNumberish,
     recipient: string,
@@ -1706,16 +1673,6 @@ export class StMTRG extends Contract {
     ): Promise<BigNumber>;
 
     "valueToShare(uint256)"(
-      _value: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    valueToShare2(
-      _value: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "valueToShare2(uint256)"(
       _value: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -2155,16 +2112,6 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    valueToShare2(
-      _value: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    "valueToShare2(uint256)"(
-      _value: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     withdraw(
       amount: BigNumberish,
       recipient: string,
@@ -2585,16 +2532,6 @@ export class StMTRG extends Contract {
     ): Promise<PopulatedTransaction>;
 
     "valueToShare(uint256)"(
-      _value: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    valueToShare2(
-      _value: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "valueToShare2(uint256)"(
       _value: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

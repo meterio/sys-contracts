@@ -17,8 +17,6 @@ contract StMTRG is
     using WadRayMath for uint256;
     uint256 public _totalShares = 0;
     uint256 public epoch;
-    string private _name = "Staked MTRG";
-    string private _symbol = "stMTRG";
     uint256 public constant CLOSE_DURATION = 30 days;
     uint256 public closeTimestamp;
     bool public isClosed = false;
@@ -41,8 +39,8 @@ contract StMTRG is
         address scriptEngineAddr,
         address _candidate
     ) public initializer {
-        __ERC20Permit_init(_name);
-        __ERC20_init(_name, _symbol);
+        __ERC20Permit_init("stMTRG 1.0");
+        __ERC20_init("Staked MTRG", "stMTRG");
         __Pausable_init();
         _setupRole(DEFAULT_ADMIN_ROLE, admin);
         scriptEngine = IScriptEngine(scriptEngineAddr);

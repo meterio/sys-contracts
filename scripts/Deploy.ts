@@ -1,4 +1,4 @@
-import { ethers, web3, deployments } from "hardhat";
+import { ethers, deployments } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Logger } from "tslog";
 import logSettings from "./log_settings";
@@ -24,8 +24,8 @@ export class Deploy {
     );
     const { deploy } = deployments;
 
-    const gasPrice = await web3.eth.getGasPrice();
-    log.info("Gas price: " + gasPrice);
+    // const gasPrice = await web3.eth.getGasPrice();
+    // log.info("Gas price: " + gasPrice);
     const lib: string | undefined = libraries.get(name);
     let _override: DeployOptions;
     if (lib) {

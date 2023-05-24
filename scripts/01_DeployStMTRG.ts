@@ -2,29 +2,49 @@ import { Deploy } from "./Deploy";
 import { ethers } from "hardhat";
 import { Verify } from "./Verify";
 import { Misc } from "./Misc";
-const candidatesIndex = 1;
+import { StMTRG } from "../typechain";
+const candidatesIndex = 2;
 async function main() {
   const signer = (await ethers.getSigners())[0];
   const chainId = await signer.getChainId();
   const MTRG = Misc.getContract(chainId, "MTRG");
   const ScriptEngine = Misc.getContract(chainId, "ScriptEngine");
   const Candidates = Misc.getContract(chainId, "Candidates");
+  let proxyAdmin = Misc.getContract(chainId, "ProxyAdmin");
 
-  const stMTRG = await Deploy.deployContract(
-    signer,
-    "StMTRG",
+  if (proxyAdmin.address == ethers.constants.AddressZero) {
+    proxyAdmin = await Deploy.deployContract(signer, "ProxyAdmin");
+    console.log("" + "proxy admin: " + proxyAdmin.address + "\n");
+    Misc.saveFile(await signer.getChainId(), "ProxyAdmin", proxyAdmin.address);
+  }
+
+  const stMTRGimpl = (await Deploy.deployContract(signer, "StMTRG")) as StMTRG;
+
+  const data = stMTRGimpl.interface.encodeFunctionData("initialize", [
+    signer.address,
     MTRG.address,
     ScriptEngine.address,
-    Candidates[candidatesIndex].address
+    Candidates[candidatesIndex].address,
+  ]);
+  const proxy = await Deploy.deployContract(
+    signer,
+    "StakingProxy",
+    stMTRGimpl.address,
+    proxyAdmin.address,
+    data
   );
 
-  let data = "" + "StMTRG: " + stMTRG.address + "\n";
-
-  console.log(data);
+  console.log("" + "StMTRG impl: " + stMTRGimpl.address + "\n");
+  console.log("" + "StMTRG: " + proxy.address + "\n");
   Misc.saveFile(
     await signer.getChainId(),
-    "StMTRG_" + candidatesIndex,
-    stMTRG.address
+    "StMTRG_Impl_" + candidatesIndex,
+    stMTRGimpl.address
+  );
+  Misc.saveFile(
+    await signer.getChainId(),
+    "StMTRG_Proxy_" + candidatesIndex,
+    stMTRGimpl.address
   );
   await Misc.wait(5);
   await Verify.sourcify();
