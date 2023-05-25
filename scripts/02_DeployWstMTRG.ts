@@ -8,7 +8,7 @@ async function main() {
   const signer = (await ethers.getSigners())[0];
   const chainId = await signer.getChainId();
 
-  const stMTRG = Misc.getContract(chainId, "StMTRG_" + candidatesIndex+"_Proxy");
+  const stMTRG = Misc.getContract(chainId, "StMTRG_Proxy_" + candidatesIndex+"");
   let proxyAdmin = Misc.getContract(chainId, "ProxyAdmin");
 
   const wstMTRGimpl = (await Deploy.deployContract(
