@@ -44,7 +44,7 @@ async function main() {
   Misc.saveFile(
     await signer.getChainId(),
     "StMTRG_Proxy_" + candidatesIndex,
-    stMTRGimpl.address
+    proxy.address
   );
   await Misc.wait(5);
   await Verify.sourcify();
