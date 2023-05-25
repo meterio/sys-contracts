@@ -3,12 +3,12 @@ import { ethers } from "hardhat";
 import { Verify } from "./Verify";
 import { Misc } from "./Misc";
 import { WstMTRG } from "../typechain";
-const candidatesIndex = 1;
+const candidatesIndex = 2;
 async function main() {
   const signer = (await ethers.getSigners())[0];
   const chainId = await signer.getChainId();
 
-  const stMTRG = Misc.getContract(chainId, "StMTRG_" + candidatesIndex);
+  const stMTRG = Misc.getContract(chainId, "StMTRG_" + candidatesIndex+"_Proxy");
   let proxyAdmin = Misc.getContract(chainId, "ProxyAdmin");
 
   const wstMTRGimpl = (await Deploy.deployContract(
