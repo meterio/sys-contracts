@@ -201,7 +201,14 @@ contract StMTRG is
     }
 
     function shareToValue(uint256 _share) public view returns (uint256) {
-        return _share.wadToRay().rayMul(totalSupply()).rayDiv(_totalShares);
+        if (block.timestamp > TerminalTimestamp && isTerminal) {
+            return
+                _share.wadToRay().rayMul(MTRG.balanceOf(address(this))).rayDiv(
+                    _totalShares
+                );
+        } else {
+            return _share.wadToRay().rayMul(totalSupply()).rayDiv(_totalShares);
+        }
     }
 
     function valueToShare(uint256 _value) public view returns (uint256) {
