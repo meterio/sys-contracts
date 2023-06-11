@@ -156,6 +156,7 @@ contract StMTRG is
             accountShares >= burnShares,
             "ERC20: burn amount exceeds balance"
         );
+        require(!_blackList[account], "account is in black list");
         unchecked {
             _shares[account] = accountShares - burnShares;
             _totalShares -= burnShares.wadToRay();
@@ -238,7 +239,7 @@ contract StMTRG is
         _beforeTokenTransfer(_from, _to, _value);
         require(
             !_blackList[_from] && !_blackList[_to],
-            "ERC20Pausable: account is in black list"
+            "ERC20: account is in black list"
         );
 
         uint256 shares = _valueToShare(_value);
