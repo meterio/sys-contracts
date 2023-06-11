@@ -54,20 +54,20 @@ contract MeterERC20 is IERC20 {
         return true;
     }
 
-    /// @notice It's not VIP180(ERC20)'s standard method. It allows master of `_from` or `_from` itself to transfer `_amount` of energy to `_to`.
-    function move(
-        address _from,
-        address _to,
-        uint256 _amount
-    ) public returns (bool success) {
-        require(
-            _from == msg.sender ||
-                _meterTracker.native_master(_from) == msg.sender,
-            "builtin: self or master required"
-        );
-        _transfer(_from, _to, _amount);
-        return true;
-    }
+    // /// @notice It's not VIP180(ERC20)'s standard method. It allows master of `_from` or `_from` itself to transfer `_amount` of energy to `_to`.
+    // function move(
+    //     address _from,
+    //     address _to,
+    //     uint256 _amount
+    // ) public returns (bool success) {
+    //     require(
+    //         _from == msg.sender ||
+    //             _meterTracker.native_master(_from) == msg.sender,
+    //         "builtin: self or master required"
+    //     );
+    //     _transfer(_from, _to, _amount);
+    //     return true;
+    // }
 
     function transferFrom(
         address _from,
