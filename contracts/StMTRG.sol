@@ -28,6 +28,9 @@ contract StMTRG is
     bytes32 public bucketID;
     address public candidate;
     IERC20Upgradeable public MTRG;
+
+    uint256 TerminalTimestamp = 0;
+    bool isTerminal = false;
     event LogRebase(uint256 indexed epoch, uint256 totalSupply);
     event NewCandidate(address oldCandidate, address newCandidate);
     event RequestClost(uint256 timestamp);
@@ -105,6 +108,8 @@ contract StMTRG is
             "CLOSE_DURATION!"
         );
         scriptEngine.bucketClose(bucketID);
+        isTerminal = true;
+        TerminalTimestamp = block.timestamp + 1 weeks; // Modify 1weeks based on bound lock time
         emit ExecuteClost(block.timestamp);
     }
 
@@ -156,7 +161,11 @@ contract StMTRG is
             _totalShares -= burnShares.wadToRay();
         }
         emit Transfer(account, address(0), amount);
-        scriptEngine.bucketWithdraw(bucketID, amount, recipient);
+        if (block.timestamp > TerminalTimestamp && isTerminal) {
+            MTRG.transfer(recipient, amount);
+        } else {
+            scriptEngine.bucketWithdraw(bucketID, amount, recipient);
+        }
     }
 
     function withdraw(uint256 amount, address recipient) public whenNotPaused {
@@ -200,7 +209,15 @@ contract StMTRG is
     }
 
     function _valueToShare(uint256 _value) private view returns (uint256) {
-        return _value.rayMul(_totalShares).rayDiv(totalSupply()).rayToWad();
+        if (block.timestamp > TerminalTimestamp && isTerminal) {
+            return
+                _value
+                    .rayMul(_totalShares)
+                    .rayDiv(MTRG.balanceOf(address(this)))
+                    .rayToWad();
+        } else {
+            return _value.rayMul(_totalShares).rayDiv(totalSupply()).rayToWad();
+        }
     }
 
     function _transfer(
