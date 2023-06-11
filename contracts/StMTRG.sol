@@ -113,23 +113,23 @@ contract StMTRG is
         emit ExecuteClost(block.timestamp);
     }
 
-    function adminWithdrawAll(address to) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(isClosed, "closed!");
-        require(
-            block.timestamp >= closeTimestamp + CLOSE_DURATION,
-            "CLOSE_DURATION!"
-        );
-        uint256 amount = MTRG.balanceOf(address(this));
-        MTRG.transfer(to, amount);
-    }
+    // function adminWithdrawAll(address to) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    //     require(isClosed, "closed!");
+    //     require(
+    //         block.timestamp >= closeTimestamp + CLOSE_DURATION,
+    //         "CLOSE_DURATION!"
+    //     );
+    //     uint256 amount = MTRG.balanceOf(address(this));
+    //     MTRG.transfer(to, amount);
+    // }
 
-    function adminWithdraw(
-        address account,
-        uint256 amount,
-        address recipient
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) whenPaused {
-        _withdraw(account, amount, recipient);
-    }
+    // function adminWithdraw(
+    //     address account,
+    //     uint256 amount,
+    //     address recipient
+    // ) public onlyRole(DEFAULT_ADMIN_ROLE) whenPaused {
+    //     _withdraw(account, amount, recipient);
+    // }
 
     function deposit(uint256 amount) public whenNotPaused {
         require(!isClosed, "closed!");
