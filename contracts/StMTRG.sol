@@ -15,7 +15,7 @@ contract StMTRG is
     PausableUpgradeable
 {
     using WadRayMath for uint256;
-    uint256 public _totalShares = 0;
+    uint256 private _totalShares = 0;
     uint256 public epoch;
     uint256 public constant CLOSE_DURATION = 30 days;
     uint256 public closeTimestamp;
@@ -199,6 +199,10 @@ contract StMTRG is
      */
     function totalSupply() public view override returns (uint256) {
         return scriptEngine.boundedMTRG();
+    }
+
+    function totalShare() public view returns (uint256) {
+        return _totalShares.rayToWad();
     }
 
     function shareToValue(uint256 _share) public view returns (uint256) {
