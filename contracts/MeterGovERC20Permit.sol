@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts v4.4.1 (port from token/ERC20/extensions/draft-ERC20Permit.sol)
 
+// V3: removed `move` function due to security vulnerability
+// V2: MeterGovERC20Permit.sol
+// V1: MeterGovERC20.sol
+
 pragma solidity ^0.8.0;
 
 import "./draft-IERC20Permit.sol";
