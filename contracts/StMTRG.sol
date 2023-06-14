@@ -29,7 +29,6 @@ contract StMTRG is
     address public candidate;
     IERC20Upgradeable public MTRG;
 
-    uint256 TerminalTimestamp = 0;
     bool isTerminal = false;
     event LogRebase(uint256 indexed epoch, uint256 totalSupply);
     event NewCandidate(address oldCandidate, address newCandidate);
@@ -108,28 +107,14 @@ contract StMTRG is
             "CLOSE_DURATION!"
         );
         scriptEngine.bucketClose(bucketID);
-        isTerminal = true;
-        TerminalTimestamp = block.timestamp + 1 weeks; // Modify 1weeks based on bound lock time
         emit ExecuteClost(block.timestamp);
     }
 
-    // function adminWithdrawAll(address to) public onlyRole(DEFAULT_ADMIN_ROLE) {
-    //     require(isClosed, "closed!");
-    //     require(
-    //         block.timestamp >= closeTimestamp + CLOSE_DURATION,
-    //         "CLOSE_DURATION!"
-    //     );
-    //     uint256 amount = MTRG.balanceOf(address(this));
-    //     MTRG.transfer(to, amount);
-    // }
-
-    // function adminWithdraw(
-    //     address account,
-    //     uint256 amount,
-    //     address recipient
-    // ) public onlyRole(DEFAULT_ADMIN_ROLE) whenPaused {
-    //     _withdraw(account, amount, recipient);
-    // }
+    function closeTerminal() public onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(isClosed, "closed!");
+        require(!isTerminal, "isTerminal!");
+        isTerminal = true;
+    }
 
     function deposit(uint256 amount) public whenNotPaused {
         require(!isClosed, "closed!");
@@ -162,7 +147,7 @@ contract StMTRG is
             _totalShares -= burnShares.wadToRay();
         }
         emit Transfer(account, address(0), amount);
-        if (block.timestamp > TerminalTimestamp && isTerminal) {
+        if (isTerminal) {
             MTRG.transfer(recipient, amount);
         } else {
             scriptEngine.bucketWithdraw(bucketID, amount, recipient);
@@ -206,7 +191,7 @@ contract StMTRG is
     }
 
     function shareToValue(uint256 _share) public view returns (uint256) {
-        if (block.timestamp > TerminalTimestamp && isTerminal) {
+        if (isTerminal) {
             return
                 _share.wadToRay().rayMul(MTRG.balanceOf(address(this))).rayDiv(
                     _totalShares
@@ -221,7 +206,7 @@ contract StMTRG is
     }
 
     function _valueToShare(uint256 _value) private view returns (uint256) {
-        if (block.timestamp > TerminalTimestamp && isTerminal) {
+        if (isTerminal) {
             return
                 _value
                     .rayMul(_totalShares)
