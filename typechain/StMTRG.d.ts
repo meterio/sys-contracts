@@ -26,22 +26,20 @@ interface StMTRGInterface extends ethers.utils.Interface {
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "DOMAIN_SEPARATOR()": FunctionFragment;
     "MTRG()": FunctionFragment;
-    "_shares(address)": FunctionFragment;
-    "_totalShares()": FunctionFragment;
-    "adminInit()": FunctionFragment;
-    "adminWithdraw(address,uint256,address)": FunctionFragment;
-    "adminWithdrawAll(address)": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
-    "bucketID()": FunctionFragment;
-    "candidate()": FunctionFragment;
+    "bucketIDToCandidate(bytes32)": FunctionFragment;
+    "candidateIndex(address)": FunctionFragment;
+    "candidateToBucket(address)": FunctionFragment;
+    "candidates()": FunctionFragment;
+    "closeTerminal(address)": FunctionFragment;
     "closeTimestamp()": FunctionFragment;
     "decimals()": FunctionFragment;
     "decreaseAllowance(address,uint256)": FunctionFragment;
     "deposit(uint256)": FunctionFragment;
     "epoch()": FunctionFragment;
-    "executeClose()": FunctionFragment;
+    "executeClose(address)": FunctionFragment;
     "exit(address)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "getRoleMember(bytes32,uint256)": FunctionFragment;
@@ -49,26 +47,28 @@ interface StMTRGInterface extends ethers.utils.Interface {
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
-    "initialize(address,address,address,address)": FunctionFragment;
-    "isClosed()": FunctionFragment;
+    "initialize(address,address,address)": FunctionFragment;
     "name()": FunctionFragment;
+    "newCandidate(address)": FunctionFragment;
     "nonces(address)": FunctionFragment;
     "pause()": FunctionFragment;
     "paused()": FunctionFragment;
     "permit(address,address,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
     "rebase()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
-    "requestClose()": FunctionFragment;
+    "requestClose(address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "setBlackList(address)": FunctionFragment;
     "shareToValue(uint256)": FunctionFragment;
+    "shares(address)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
+    "totalShares()": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
     "unpause()": FunctionFragment;
-    "updateCandidate(address)": FunctionFragment;
+    "updateCandidate(address,address)": FunctionFragment;
     "valueToShare(uint256)": FunctionFragment;
     "withdraw(uint256,address)": FunctionFragment;
   };
@@ -86,20 +86,6 @@ interface StMTRGInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "MTRG", values?: undefined): string;
-  encodeFunctionData(functionFragment: "_shares", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "_totalShares",
-    values?: undefined
-  ): string;
-  encodeFunctionData(functionFragment: "adminInit", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "adminWithdraw",
-    values: [string, BigNumberish, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "adminWithdrawAll",
-    values: [string]
-  ): string;
   encodeFunctionData(
     functionFragment: "allowance",
     values: [string, string]
@@ -109,8 +95,26 @@ interface StMTRGInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
-  encodeFunctionData(functionFragment: "bucketID", values?: undefined): string;
-  encodeFunctionData(functionFragment: "candidate", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "bucketIDToCandidate",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "candidateIndex",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "candidateToBucket",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "candidates",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "closeTerminal",
+    values: [string]
+  ): string;
   encodeFunctionData(
     functionFragment: "closeTimestamp",
     values?: undefined
@@ -127,7 +131,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "epoch", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "executeClose",
-    values?: undefined
+    values: [string]
   ): string;
   encodeFunctionData(functionFragment: "exit", values: [string]): string;
   encodeFunctionData(
@@ -156,10 +160,13 @@ interface StMTRGInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [string, string, string, string]
+    values: [string, string, string]
   ): string;
-  encodeFunctionData(functionFragment: "isClosed", values?: undefined): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "newCandidate",
+    values: [string]
+  ): string;
   encodeFunctionData(functionFragment: "nonces", values: [string]): string;
   encodeFunctionData(functionFragment: "pause", values?: undefined): string;
   encodeFunctionData(functionFragment: "paused", values?: undefined): string;
@@ -182,7 +189,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "requestClose",
-    values?: undefined
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "revokeRole",
@@ -196,11 +203,16 @@ interface StMTRGInterface extends ethers.utils.Interface {
     functionFragment: "shareToValue",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "shares", values: [string]): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "totalShares",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "totalSupply",
     values?: undefined
@@ -216,7 +228,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "updateCandidate",
-    values: [string]
+    values: [string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "valueToShare",
@@ -240,25 +252,26 @@ interface StMTRGInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "MTRG", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "_shares", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "_totalShares",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(functionFragment: "adminInit", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "adminWithdraw",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "adminWithdrawAll",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "bucketID", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "candidate", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "bucketIDToCandidate",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "candidateIndex",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "candidateToBucket",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "candidates", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "closeTerminal",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "closeTimestamp",
     data: BytesLike
@@ -294,8 +307,11 @@ interface StMTRGInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "isClosed", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "newCandidate",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "nonces", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
@@ -318,11 +334,16 @@ interface StMTRGInterface extends ethers.utils.Interface {
     functionFragment: "shareToValue",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "shares", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "totalShares",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
     data: BytesLike
@@ -345,20 +366,25 @@ interface StMTRGInterface extends ethers.utils.Interface {
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
-    "ExecuteClost(uint256)": EventFragment;
+    "Deposit(address,bytes32,uint256)": EventFragment;
+    "ExecuteClost(address,bytes32,uint256)": EventFragment;
     "Initialized(uint8)": EventFragment;
-    "LogRebase(uint256,uint256)": EventFragment;
-    "NewCandidate(address,address)": EventFragment;
+    "LogRebase(bytes32,address,uint256,uint256)": EventFragment;
+    "NewCandidate(address,bytes32)": EventFragment;
     "Paused(address)": EventFragment;
-    "RequestClost(uint256)": EventFragment;
+    "RequestClost(address,bytes32,uint256)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
+    "TerminalClost(address,bytes32,uint256)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
     "Unpaused(address)": EventFragment;
+    "UpdateCandidate(address,address)": EventFragment;
+    "Withdraw(address,bytes32,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Deposit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ExecuteClost"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LogRebase"): EventFragment;
@@ -368,8 +394,11 @@ interface StMTRGInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TerminalClost"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "UpdateCandidate"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Withdraw"): EventFragment;
 }
 
 export class StMTRG extends Contract {
@@ -418,56 +447,6 @@ export class StMTRG extends Contract {
       0: string;
     }>;
 
-    _shares(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "_shares(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    _totalShares(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    "_totalShares()"(overrides?: CallOverrides): Promise<{
-      0: BigNumber;
-    }>;
-
-    adminInit(overrides?: Overrides): Promise<ContractTransaction>;
-
-    "adminInit()"(overrides?: Overrides): Promise<ContractTransaction>;
-
-    adminWithdraw(
-      account: string,
-      amount: BigNumberish,
-      recipient: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "adminWithdraw(address,uint256,address)"(
-      account: string,
-      amount: BigNumberish,
-      recipient: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    adminWithdrawAll(
-      to: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "adminWithdrawAll(address)"(
-      to: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
     allowance(
       owner: string,
       spender: string,
@@ -510,21 +489,79 @@ export class StMTRG extends Contract {
       0: BigNumber;
     }>;
 
-    bucketID(overrides?: CallOverrides): Promise<{
+    bucketIDToCandidate(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
       0: string;
     }>;
 
-    "bucketID()"(overrides?: CallOverrides): Promise<{
+    "bucketIDToCandidate(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
       0: string;
     }>;
 
-    candidate(overrides?: CallOverrides): Promise<{
-      0: string;
+    candidateIndex(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
     }>;
 
-    "candidate()"(overrides?: CallOverrides): Promise<{
-      0: string;
+    "candidateIndex(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
     }>;
+
+    candidateToBucket(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      bucketID: string;
+      totalDeposit: BigNumber;
+      closeTimestamp: BigNumber;
+      status: number;
+      0: string;
+      1: BigNumber;
+      2: BigNumber;
+      3: number;
+    }>;
+
+    "candidateToBucket(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      bucketID: string;
+      totalDeposit: BigNumber;
+      closeTimestamp: BigNumber;
+      status: number;
+      0: string;
+      1: BigNumber;
+      2: BigNumber;
+      3: number;
+    }>;
+
+    candidates(overrides?: CallOverrides): Promise<{
+      0: string[];
+    }>;
+
+    "candidates()"(overrides?: CallOverrides): Promise<{
+      0: string[];
+    }>;
+
+    closeTerminal(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "closeTerminal(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
     closeTimestamp(overrides?: CallOverrides): Promise<{
       0: BigNumber;
@@ -572,9 +609,15 @@ export class StMTRG extends Contract {
       0: BigNumber;
     }>;
 
-    executeClose(overrides?: Overrides): Promise<ContractTransaction>;
+    executeClose(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-    "executeClose()"(overrides?: Overrides): Promise<ContractTransaction>;
+    "executeClose(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
     exit(
       recipient: string,
@@ -674,25 +717,15 @@ export class StMTRG extends Contract {
       admin: string,
       _MTRG: string,
       scriptEngineAddr: string,
-      _candidate: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    "initialize(address,address,address,address)"(
+    "initialize(address,address,address)"(
       admin: string,
       _MTRG: string,
       scriptEngineAddr: string,
-      _candidate: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
-
-    isClosed(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
-
-    "isClosed()"(overrides?: CallOverrides): Promise<{
-      0: boolean;
-    }>;
 
     name(overrides?: CallOverrides): Promise<{
       0: string;
@@ -701,6 +734,16 @@ export class StMTRG extends Contract {
     "name()"(overrides?: CallOverrides): Promise<{
       0: string;
     }>;
+
+    newCandidate(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "newCandidate(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
     nonces(
       owner: string,
@@ -766,9 +809,15 @@ export class StMTRG extends Contract {
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    requestClose(overrides?: Overrides): Promise<ContractTransaction>;
+    requestClose(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
-    "requestClose()"(overrides?: Overrides): Promise<ContractTransaction>;
+    "requestClose(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
 
     revokeRole(
       role: BytesLike,
@@ -806,6 +855,20 @@ export class StMTRG extends Contract {
       0: BigNumber;
     }>;
 
+    shares(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
+
+    "shares(address)"(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -826,6 +889,14 @@ export class StMTRG extends Contract {
 
     "symbol()"(overrides?: CallOverrides): Promise<{
       0: string;
+    }>;
+
+    totalShares(overrides?: CallOverrides): Promise<{
+      0: BigNumber;
+    }>;
+
+    "totalShares()"(overrides?: CallOverrides): Promise<{
+      0: BigNumber;
     }>;
 
     totalSupply(overrides?: CallOverrides): Promise<{
@@ -867,11 +938,13 @@ export class StMTRG extends Contract {
     "unpause()"(overrides?: Overrides): Promise<ContractTransaction>;
 
     updateCandidate(
+      oldCandidateAddr: string,
       newCandidateAddr: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    "updateCandidate(address)"(
+    "updateCandidate(address,address)"(
+      oldCandidateAddr: string,
       newCandidateAddr: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
@@ -919,45 +992,6 @@ export class StMTRG extends Contract {
 
   "MTRG()"(overrides?: CallOverrides): Promise<string>;
 
-  _shares(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-  "_shares(address)"(
-    arg0: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  _totalShares(overrides?: CallOverrides): Promise<BigNumber>;
-
-  "_totalShares()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-  adminInit(overrides?: Overrides): Promise<ContractTransaction>;
-
-  "adminInit()"(overrides?: Overrides): Promise<ContractTransaction>;
-
-  adminWithdraw(
-    account: string,
-    amount: BigNumberish,
-    recipient: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "adminWithdraw(address,uint256,address)"(
-    account: string,
-    amount: BigNumberish,
-    recipient: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  adminWithdrawAll(
-    to: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "adminWithdrawAll(address)"(
-    to: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
   allowance(
     owner: string,
     spender: string,
@@ -989,13 +1023,64 @@ export class StMTRG extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
-  bucketID(overrides?: CallOverrides): Promise<string>;
+  bucketIDToCandidate(
+    arg0: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
-  "bucketID()"(overrides?: CallOverrides): Promise<string>;
+  "bucketIDToCandidate(bytes32)"(
+    arg0: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
-  candidate(overrides?: CallOverrides): Promise<string>;
+  candidateIndex(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-  "candidate()"(overrides?: CallOverrides): Promise<string>;
+  "candidateIndex(address)"(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  candidateToBucket(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<{
+    bucketID: string;
+    totalDeposit: BigNumber;
+    closeTimestamp: BigNumber;
+    status: number;
+    0: string;
+    1: BigNumber;
+    2: BigNumber;
+    3: number;
+  }>;
+
+  "candidateToBucket(address)"(
+    arg0: string,
+    overrides?: CallOverrides
+  ): Promise<{
+    bucketID: string;
+    totalDeposit: BigNumber;
+    closeTimestamp: BigNumber;
+    status: number;
+    0: string;
+    1: BigNumber;
+    2: BigNumber;
+    3: number;
+  }>;
+
+  candidates(overrides?: CallOverrides): Promise<string[]>;
+
+  "candidates()"(overrides?: CallOverrides): Promise<string[]>;
+
+  closeTerminal(
+    candidate: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "closeTerminal(address)"(
+    candidate: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
   closeTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1031,9 +1116,15 @@ export class StMTRG extends Contract {
 
   "epoch()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-  executeClose(overrides?: Overrides): Promise<ContractTransaction>;
+  executeClose(
+    candidate: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
-  "executeClose()"(overrides?: Overrides): Promise<ContractTransaction>;
+  "executeClose(address)"(
+    candidate: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
   exit(recipient: string, overrides?: Overrides): Promise<ContractTransaction>;
 
@@ -1111,25 +1202,29 @@ export class StMTRG extends Contract {
     admin: string,
     _MTRG: string,
     scriptEngineAddr: string,
-    _candidate: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  "initialize(address,address,address,address)"(
+  "initialize(address,address,address)"(
     admin: string,
     _MTRG: string,
     scriptEngineAddr: string,
-    _candidate: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
-
-  isClosed(overrides?: CallOverrides): Promise<boolean>;
-
-  "isClosed()"(overrides?: CallOverrides): Promise<boolean>;
 
   name(overrides?: CallOverrides): Promise<string>;
 
   "name()"(overrides?: CallOverrides): Promise<string>;
+
+  newCandidate(
+    candidate: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "newCandidate(address)"(
+    candidate: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
   nonces(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1184,9 +1279,15 @@ export class StMTRG extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  requestClose(overrides?: Overrides): Promise<ContractTransaction>;
+  requestClose(
+    candidate: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
-  "requestClose()"(overrides?: Overrides): Promise<ContractTransaction>;
+  "requestClose(address)"(
+    candidate: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
 
   revokeRole(
     role: BytesLike,
@@ -1220,6 +1321,13 @@ export class StMTRG extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  shares(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  "shares(address)"(
+    account: string,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   supportsInterface(
     interfaceId: BytesLike,
     overrides?: CallOverrides
@@ -1233,6 +1341,10 @@ export class StMTRG extends Contract {
   symbol(overrides?: CallOverrides): Promise<string>;
 
   "symbol()"(overrides?: CallOverrides): Promise<string>;
+
+  totalShares(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "totalShares()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1269,11 +1381,13 @@ export class StMTRG extends Contract {
   "unpause()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   updateCandidate(
+    oldCandidateAddr: string,
     newCandidateAddr: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  "updateCandidate(address)"(
+  "updateCandidate(address,address)"(
+    oldCandidateAddr: string,
     newCandidateAddr: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
@@ -1317,42 +1431,6 @@ export class StMTRG extends Contract {
 
     "MTRG()"(overrides?: CallOverrides): Promise<string>;
 
-    _shares(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_shares(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    _totalShares(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_totalShares()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    adminInit(overrides?: CallOverrides): Promise<void>;
-
-    "adminInit()"(overrides?: CallOverrides): Promise<void>;
-
-    adminWithdraw(
-      account: string,
-      amount: BigNumberish,
-      recipient: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "adminWithdraw(address,uint256,address)"(
-      account: string,
-      amount: BigNumberish,
-      recipient: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    adminWithdrawAll(to: string, overrides?: CallOverrides): Promise<void>;
-
-    "adminWithdrawAll(address)"(
-      to: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     allowance(
       owner: string,
       spender: string,
@@ -1384,13 +1462,61 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    bucketID(overrides?: CallOverrides): Promise<string>;
+    bucketIDToCandidate(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
-    "bucketID()"(overrides?: CallOverrides): Promise<string>;
+    "bucketIDToCandidate(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
-    candidate(overrides?: CallOverrides): Promise<string>;
+    candidateIndex(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "candidate()"(overrides?: CallOverrides): Promise<string>;
+    "candidateIndex(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    candidateToBucket(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      bucketID: string;
+      totalDeposit: BigNumber;
+      closeTimestamp: BigNumber;
+      status: number;
+      0: string;
+      1: BigNumber;
+      2: BigNumber;
+      3: number;
+    }>;
+
+    "candidateToBucket(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<{
+      bucketID: string;
+      totalDeposit: BigNumber;
+      closeTimestamp: BigNumber;
+      status: number;
+      0: string;
+      1: BigNumber;
+      2: BigNumber;
+      3: number;
+    }>;
+
+    candidates(overrides?: CallOverrides): Promise<string[]>;
+
+    "candidates()"(overrides?: CallOverrides): Promise<string[]>;
+
+    closeTerminal(candidate: string, overrides?: CallOverrides): Promise<void>;
+
+    "closeTerminal(address)"(
+      candidate: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     closeTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1423,9 +1549,12 @@ export class StMTRG extends Contract {
 
     "epoch()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    executeClose(overrides?: CallOverrides): Promise<void>;
+    executeClose(candidate: string, overrides?: CallOverrides): Promise<void>;
 
-    "executeClose()"(overrides?: CallOverrides): Promise<void>;
+    "executeClose(address)"(
+      candidate: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     exit(recipient: string, overrides?: CallOverrides): Promise<void>;
 
@@ -1503,25 +1632,26 @@ export class StMTRG extends Contract {
       admin: string,
       _MTRG: string,
       scriptEngineAddr: string,
-      _candidate: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "initialize(address,address,address,address)"(
+    "initialize(address,address,address)"(
       admin: string,
       _MTRG: string,
       scriptEngineAddr: string,
-      _candidate: string,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    isClosed(overrides?: CallOverrides): Promise<boolean>;
-
-    "isClosed()"(overrides?: CallOverrides): Promise<boolean>;
 
     name(overrides?: CallOverrides): Promise<string>;
 
     "name()"(overrides?: CallOverrides): Promise<string>;
+
+    newCandidate(candidate: string, overrides?: CallOverrides): Promise<void>;
+
+    "newCandidate(address)"(
+      candidate: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     nonces(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1576,9 +1706,12 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    requestClose(overrides?: CallOverrides): Promise<void>;
+    requestClose(candidate: string, overrides?: CallOverrides): Promise<void>;
 
-    "requestClose()"(overrides?: CallOverrides): Promise<void>;
+    "requestClose(address)"(
+      candidate: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     revokeRole(
       role: BytesLike,
@@ -1609,6 +1742,13 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    shares(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    "shares(address)"(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -1622,6 +1762,10 @@ export class StMTRG extends Contract {
     symbol(overrides?: CallOverrides): Promise<string>;
 
     "symbol()"(overrides?: CallOverrides): Promise<string>;
+
+    totalShares(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "totalShares()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1658,11 +1802,13 @@ export class StMTRG extends Contract {
     "unpause()"(overrides?: CallOverrides): Promise<void>;
 
     updateCandidate(
+      oldCandidateAddr: string,
       newCandidateAddr: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "updateCandidate(address)"(
+    "updateCandidate(address,address)"(
+      oldCandidateAddr: string,
       newCandidateAddr: string,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1697,17 +1843,36 @@ export class StMTRG extends Contract {
       value: null
     ): EventFilter;
 
-    ExecuteClost(timestamp: null): EventFilter;
+    Deposit(
+      account: string | null,
+      bucketID: BytesLike | null,
+      amount: null
+    ): EventFilter;
+
+    ExecuteClost(
+      candidate: string | null,
+      bucketID: null,
+      timestamp: null
+    ): EventFilter;
 
     Initialized(version: null): EventFilter;
 
-    LogRebase(epoch: BigNumberish | null, totalSupply: null): EventFilter;
+    LogRebase(
+      bucketID: BytesLike | null,
+      candidate: string | null,
+      epoch: BigNumberish | null,
+      totalSupply: null
+    ): EventFilter;
 
-    NewCandidate(oldCandidate: null, newCandidate: null): EventFilter;
+    NewCandidate(candidate: string | null, bucketID: null): EventFilter;
 
     Paused(account: null): EventFilter;
 
-    RequestClost(timestamp: null): EventFilter;
+    RequestClost(
+      candidate: string | null,
+      bucketID: null,
+      timestamp: null
+    ): EventFilter;
 
     RoleAdminChanged(
       role: BytesLike | null,
@@ -1727,9 +1892,26 @@ export class StMTRG extends Contract {
       sender: string | null
     ): EventFilter;
 
+    TerminalClost(
+      candidate: string | null,
+      bucketID: null,
+      timestamp: null
+    ): EventFilter;
+
     Transfer(from: string | null, to: string | null, value: null): EventFilter;
 
     Unpaused(account: null): EventFilter;
+
+    UpdateCandidate(
+      oldCandidate: string | null,
+      newCandidate: null
+    ): EventFilter;
+
+    Withdraw(
+      account: string | null,
+      bucketID: BytesLike | null,
+      amount: null
+    ): EventFilter;
   };
 
   estimateGas: {
@@ -1748,42 +1930,6 @@ export class StMTRG extends Contract {
     MTRG(overrides?: CallOverrides): Promise<BigNumber>;
 
     "MTRG()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    _shares(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_shares(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    _totalShares(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "_totalShares()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    adminInit(overrides?: Overrides): Promise<BigNumber>;
-
-    "adminInit()"(overrides?: Overrides): Promise<BigNumber>;
-
-    adminWithdraw(
-      account: string,
-      amount: BigNumberish,
-      recipient: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "adminWithdraw(address,uint256,address)"(
-      account: string,
-      amount: BigNumberish,
-      recipient: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    adminWithdrawAll(to: string, overrides?: Overrides): Promise<BigNumber>;
-
-    "adminWithdrawAll(address)"(
-      to: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
 
     allowance(
       owner: string,
@@ -1816,13 +1962,43 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    bucketID(overrides?: CallOverrides): Promise<BigNumber>;
+    bucketIDToCandidate(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    "bucketID()"(overrides?: CallOverrides): Promise<BigNumber>;
+    "bucketIDToCandidate(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    candidate(overrides?: CallOverrides): Promise<BigNumber>;
+    candidateIndex(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    "candidate()"(overrides?: CallOverrides): Promise<BigNumber>;
+    "candidateIndex(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    candidateToBucket(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "candidateToBucket(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    candidates(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "candidates()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    closeTerminal(candidate: string, overrides?: Overrides): Promise<BigNumber>;
+
+    "closeTerminal(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
 
     closeTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1855,9 +2031,12 @@ export class StMTRG extends Contract {
 
     "epoch()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    executeClose(overrides?: Overrides): Promise<BigNumber>;
+    executeClose(candidate: string, overrides?: Overrides): Promise<BigNumber>;
 
-    "executeClose()"(overrides?: Overrides): Promise<BigNumber>;
+    "executeClose(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
 
     exit(recipient: string, overrides?: Overrides): Promise<BigNumber>;
 
@@ -1938,25 +2117,26 @@ export class StMTRG extends Contract {
       admin: string,
       _MTRG: string,
       scriptEngineAddr: string,
-      _candidate: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    "initialize(address,address,address,address)"(
+    "initialize(address,address,address)"(
       admin: string,
       _MTRG: string,
       scriptEngineAddr: string,
-      _candidate: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
-
-    isClosed(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "isClosed()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
     "name()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    newCandidate(candidate: string, overrides?: Overrides): Promise<BigNumber>;
+
+    "newCandidate(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
 
     nonces(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -2011,9 +2191,12 @@ export class StMTRG extends Contract {
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    requestClose(overrides?: Overrides): Promise<BigNumber>;
+    requestClose(candidate: string, overrides?: Overrides): Promise<BigNumber>;
 
-    "requestClose()"(overrides?: Overrides): Promise<BigNumber>;
+    "requestClose(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
 
     revokeRole(
       role: BytesLike,
@@ -2044,6 +2227,13 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    shares(account: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    "shares(address)"(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -2057,6 +2247,10 @@ export class StMTRG extends Contract {
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
     "symbol()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    totalShares(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "totalShares()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -2093,11 +2287,13 @@ export class StMTRG extends Contract {
     "unpause()"(overrides?: Overrides): Promise<BigNumber>;
 
     updateCandidate(
+      oldCandidateAddr: string,
       newCandidateAddr: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    "updateCandidate(address)"(
+    "updateCandidate(address,address)"(
+      oldCandidateAddr: string,
       newCandidateAddr: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
@@ -2150,48 +2346,6 @@ export class StMTRG extends Contract {
 
     "MTRG()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    _shares(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "_shares(address)"(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    _totalShares(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "_totalShares()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    adminInit(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    "adminInit()"(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    adminWithdraw(
-      account: string,
-      amount: BigNumberish,
-      recipient: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "adminWithdraw(address,uint256,address)"(
-      account: string,
-      amount: BigNumberish,
-      recipient: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    adminWithdrawAll(
-      to: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "adminWithdrawAll(address)"(
-      to: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
     allowance(
       owner: string,
       spender: string,
@@ -2226,13 +2380,49 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    bucketID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    bucketIDToCandidate(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "bucketID()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "bucketIDToCandidate(bytes32)"(
+      arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    candidate(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    candidateIndex(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
-    "candidate()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "candidateIndex(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    candidateToBucket(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "candidateToBucket(address)"(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    candidates(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "candidates()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    closeTerminal(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "closeTerminal(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
 
     closeTimestamp(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -2270,9 +2460,15 @@ export class StMTRG extends Contract {
 
     "epoch()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    executeClose(overrides?: Overrides): Promise<PopulatedTransaction>;
+    executeClose(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
 
-    "executeClose()"(overrides?: Overrides): Promise<PopulatedTransaction>;
+    "executeClose(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
 
     exit(
       recipient: string,
@@ -2356,25 +2552,29 @@ export class StMTRG extends Contract {
       admin: string,
       _MTRG: string,
       scriptEngineAddr: string,
-      _candidate: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    "initialize(address,address,address,address)"(
+    "initialize(address,address,address)"(
       admin: string,
       _MTRG: string,
       scriptEngineAddr: string,
-      _candidate: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
-
-    isClosed(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "isClosed()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "name()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    newCandidate(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "newCandidate(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
 
     nonces(
       owner: string,
@@ -2432,9 +2632,15 @@ export class StMTRG extends Contract {
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    requestClose(overrides?: Overrides): Promise<PopulatedTransaction>;
+    requestClose(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
 
-    "requestClose()"(overrides?: Overrides): Promise<PopulatedTransaction>;
+    "requestClose(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
 
     revokeRole(
       role: BytesLike,
@@ -2468,6 +2674,16 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    shares(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "shares(address)"(
+      account: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     supportsInterface(
       interfaceId: BytesLike,
       overrides?: CallOverrides
@@ -2481,6 +2697,10 @@ export class StMTRG extends Contract {
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "symbol()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    totalShares(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "totalShares()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -2517,11 +2737,13 @@ export class StMTRG extends Contract {
     "unpause()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     updateCandidate(
+      oldCandidateAddr: string,
       newCandidateAddr: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    "updateCandidate(address)"(
+    "updateCandidate(address,address)"(
+      oldCandidateAddr: string,
       newCandidateAddr: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
