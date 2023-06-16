@@ -77,7 +77,7 @@ contract ScriptEngineV2  {
      * remove `fromBucket` from listing
      * will revert if any error happens
      */
-    function bucketMerge( bytes32 fromBucketID, bytes32 toBucketID, uint256 amount) public {
+    function bucketMerge(bytes32 fromBucketID, bytes32 toBucketID) public {
         string memory errMsg = _meterTracker.native_bucket_merge(msg.sender, fromBucketID, toBucketID);
         require((keccak256(abi.encodePacked((errMsg))) == keccak256(abi.encodePacked(("")))), errMsg);
     }
