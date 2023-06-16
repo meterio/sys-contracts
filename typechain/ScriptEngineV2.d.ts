@@ -25,7 +25,7 @@ interface ScriptEngineV2Interface extends ethers.utils.Interface {
     "boundedMTRG()": FunctionFragment;
     "bucketClose(bytes32)": FunctionFragment;
     "bucketDeposit(bytes32,uint256)": FunctionFragment;
-    "bucketMerge(bytes32,bytes32,uint256)": FunctionFragment;
+    "bucketMerge(bytes32,bytes32)": FunctionFragment;
     "bucketOpen(address,uint256)": FunctionFragment;
     "bucketTransferFund(bytes32,bytes32,uint256)": FunctionFragment;
     "bucketUpdateCandidate(bytes32,address)": FunctionFragment;
@@ -47,7 +47,7 @@ interface ScriptEngineV2Interface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "bucketMerge",
-    values: [BytesLike, BytesLike, BigNumberish]
+    values: [BytesLike, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "bucketOpen",
@@ -154,14 +154,12 @@ export class ScriptEngineV2 extends Contract {
     bucketMerge(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
-      amount: BigNumberish,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    "bucketMerge(bytes32,bytes32,uint256)"(
+    "bucketMerge(bytes32,bytes32)"(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
-      amount: BigNumberish,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
@@ -205,13 +203,17 @@ export class ScriptEngineV2 extends Contract {
 
     bucketValue(
       bucketID: BytesLike,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
 
     "bucketValue(bytes32)"(
       bucketID: BytesLike,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
 
     bucketWithdraw(
       bucketID: BytesLike,
@@ -257,14 +259,12 @@ export class ScriptEngineV2 extends Contract {
   bucketMerge(
     fromBucketID: BytesLike,
     toBucketID: BytesLike,
-    amount: BigNumberish,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  "bucketMerge(bytes32,bytes32,uint256)"(
+  "bucketMerge(bytes32,bytes32)"(
     fromBucketID: BytesLike,
     toBucketID: BytesLike,
-    amount: BigNumberish,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
@@ -308,13 +308,13 @@ export class ScriptEngineV2 extends Contract {
 
   bucketValue(
     bucketID: BytesLike,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   "bucketValue(bytes32)"(
     bucketID: BytesLike,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   bucketWithdraw(
     bucketID: BytesLike,
@@ -357,14 +357,12 @@ export class ScriptEngineV2 extends Contract {
     bucketMerge(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
-      amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "bucketMerge(bytes32,bytes32,uint256)"(
+    "bucketMerge(bytes32,bytes32)"(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
-      amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -460,14 +458,12 @@ export class ScriptEngineV2 extends Contract {
     bucketMerge(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
-      amount: BigNumberish,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    "bucketMerge(bytes32,bytes32,uint256)"(
+    "bucketMerge(bytes32,bytes32)"(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
-      amount: BigNumberish,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
@@ -509,11 +505,14 @@ export class ScriptEngineV2 extends Contract {
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    bucketValue(bucketID: BytesLike, overrides?: Overrides): Promise<BigNumber>;
+    bucketValue(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     "bucketValue(bytes32)"(
       bucketID: BytesLike,
-      overrides?: Overrides
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     bucketWithdraw(
@@ -561,14 +560,12 @@ export class ScriptEngineV2 extends Contract {
     bucketMerge(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
-      amount: BigNumberish,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    "bucketMerge(bytes32,bytes32,uint256)"(
+    "bucketMerge(bytes32,bytes32)"(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
-      amount: BigNumberish,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
@@ -612,12 +609,12 @@ export class ScriptEngineV2 extends Contract {
 
     bucketValue(
       bucketID: BytesLike,
-      overrides?: Overrides
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     "bucketValue(bytes32)"(
       bucketID: BytesLike,
-      overrides?: Overrides
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     bucketWithdraw(

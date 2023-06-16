@@ -73,11 +73,6 @@ const _abi = [
         name: "toBucketID",
         type: "bytes32",
       },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
     ],
     name: "bucketMerge",
     outputs: [],

@@ -25,7 +25,7 @@ interface IScriptEngineInterface extends ethers.utils.Interface {
     "boundedMTRG()": FunctionFragment;
     "bucketClose(bytes32)": FunctionFragment;
     "bucketDeposit(bytes32,uint256)": FunctionFragment;
-    "bucketMerge(bytes32,bytes32,uint256)": FunctionFragment;
+    "bucketMerge(bytes32,bytes32)": FunctionFragment;
     "bucketOpen(address,uint256)": FunctionFragment;
     "bucketTransferFund(bytes32,bytes32,uint256)": FunctionFragment;
     "bucketUpdateCandidate(bytes32,address)": FunctionFragment;
@@ -47,7 +47,7 @@ interface IScriptEngineInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "bucketMerge",
-    values: [BytesLike, BytesLike, BigNumberish]
+    values: [BytesLike, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "bucketOpen",
@@ -154,14 +154,12 @@ export class IScriptEngine extends Contract {
     bucketMerge(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
-      amount: BigNumberish,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    "bucketMerge(bytes32,bytes32,uint256)"(
+    "bucketMerge(bytes32,bytes32)"(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
-      amount: BigNumberish,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
@@ -261,14 +259,12 @@ export class IScriptEngine extends Contract {
   bucketMerge(
     fromBucketID: BytesLike,
     toBucketID: BytesLike,
-    amount: BigNumberish,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  "bucketMerge(bytes32,bytes32,uint256)"(
+  "bucketMerge(bytes32,bytes32)"(
     fromBucketID: BytesLike,
     toBucketID: BytesLike,
-    amount: BigNumberish,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
@@ -361,14 +357,12 @@ export class IScriptEngine extends Contract {
     bucketMerge(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
-      amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "bucketMerge(bytes32,bytes32,uint256)"(
+    "bucketMerge(bytes32,bytes32)"(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
-      amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -464,14 +458,12 @@ export class IScriptEngine extends Contract {
     bucketMerge(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
-      amount: BigNumberish,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    "bucketMerge(bytes32,bytes32,uint256)"(
+    "bucketMerge(bytes32,bytes32)"(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
-      amount: BigNumberish,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
@@ -568,14 +560,12 @@ export class IScriptEngine extends Contract {
     bucketMerge(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
-      amount: BigNumberish,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    "bucketMerge(bytes32,bytes32,uint256)"(
+    "bucketMerge(bytes32,bytes32)"(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
-      amount: BigNumberish,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
