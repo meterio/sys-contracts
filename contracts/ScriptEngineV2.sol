@@ -85,7 +85,7 @@ contract ScriptEngineV2  {
     /**
      * this func returns the value of the designated bucket
      */
-    function bucketValue(bytes32 bucketID) public returns (uint256) {
+    function bucketValue(bytes32 bucketID) public view returns (uint256) {
         return _meterTracker.native_bucket_value(bucketID);
     }
 
