@@ -119,13 +119,9 @@ contract MockScriptEngine {
      * remove `fromBucket` from listing
      * will revert if any error happens
      */
-    function bucketMerge(
-        bytes32 fromBucketID,
-        bytes32 toBucketID,
-        uint256 amount
-    ) public {
-        bucket[msg.sender][fromBucketID] -= amount;
-        require(bucket[msg.sender][fromBucketID] == 0, ">0");
+    function bucketMerge(bytes32 fromBucketID, bytes32 toBucketID) public {
+        uint256 amount = bucket[msg.sender][fromBucketID];
+        bucket[msg.sender][fromBucketID] = 0;
         bucket[msg.sender][toBucketID] += amount;
     }
 

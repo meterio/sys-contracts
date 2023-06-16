@@ -213,7 +213,7 @@ contract StMTRG is
         bucket.totalDeposit = 0;
         bucket.locked = 0;
         nextBucket.totalDeposit += amount;
-        scriptEngine.bucketMerge(bucket.bucketID, nextBucket.bucketID, amount);
+        scriptEngine.bucketMerge(bucket.bucketID, nextBucket.bucketID);
 
         delete bucketIDToCandidate[bucket.bucketID];
         delete candidateToBucket[candidate];
