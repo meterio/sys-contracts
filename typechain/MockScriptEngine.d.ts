@@ -27,8 +27,11 @@ interface MockScriptEngineInterface extends ethers.utils.Interface {
     "bucket(address,bytes32)": FunctionFragment;
     "bucketClose(bytes32)": FunctionFragment;
     "bucketDeposit(bytes32,uint256)": FunctionFragment;
+    "bucketMerge(bytes32,bytes32,uint256)": FunctionFragment;
     "bucketOpen(address,uint256)": FunctionFragment;
+    "bucketTransferFund(bytes32,bytes32,uint256)": FunctionFragment;
     "bucketUser(bytes32)": FunctionFragment;
+    "bucketValue(bytes32)": FunctionFragment;
     "bucketWithdraw(bytes32,uint256,address)": FunctionFragment;
     "reward()": FunctionFragment;
   };
@@ -51,11 +54,23 @@ interface MockScriptEngineInterface extends ethers.utils.Interface {
     values: [BytesLike, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "bucketMerge",
+    values: [BytesLike, BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "bucketOpen",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "bucketTransferFund",
+    values: [BytesLike, BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "bucketUser",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "bucketValue",
     values: [BytesLike]
   ): string;
   encodeFunctionData(
@@ -78,8 +93,20 @@ interface MockScriptEngineInterface extends ethers.utils.Interface {
     functionFragment: "bucketDeposit",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "bucketMerge",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "bucketOpen", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "bucketTransferFund",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "bucketUser", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "bucketValue",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "bucketWithdraw",
     data: BytesLike
@@ -157,6 +184,20 @@ export class MockScriptEngine extends Contract {
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
+    bucketMerge(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "bucketMerge(bytes32,bytes32,uint256)"(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
     bucketOpen(
       candidate: string,
       amount: BigNumberish,
@@ -165,6 +206,20 @@ export class MockScriptEngine extends Contract {
 
     "bucketOpen(address,uint256)"(
       candidate: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    bucketTransferFund(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "bucketTransferFund(bytes32,bytes32,uint256)"(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
       amount: BigNumberish,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
@@ -181,6 +236,20 @@ export class MockScriptEngine extends Contract {
       overrides?: CallOverrides
     ): Promise<{
       0: string;
+    }>;
+
+    bucketValue(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
+
+    "bucketValue(bytes32)"(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
     }>;
 
     bucketWithdraw(
@@ -244,6 +313,20 @@ export class MockScriptEngine extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
+  bucketMerge(
+    fromBucketID: BytesLike,
+    toBucketID: BytesLike,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "bucketMerge(bytes32,bytes32,uint256)"(
+    fromBucketID: BytesLike,
+    toBucketID: BytesLike,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
   bucketOpen(
     candidate: string,
     amount: BigNumberish,
@@ -256,12 +339,36 @@ export class MockScriptEngine extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
+  bucketTransferFund(
+    fromBucketID: BytesLike,
+    toBucketID: BytesLike,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "bucketTransferFund(bytes32,bytes32,uint256)"(
+    fromBucketID: BytesLike,
+    toBucketID: BytesLike,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
   bucketUser(arg0: BytesLike, overrides?: CallOverrides): Promise<string>;
 
   "bucketUser(bytes32)"(
     arg0: BytesLike,
     overrides?: CallOverrides
   ): Promise<string>;
+
+  bucketValue(
+    bucketID: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  "bucketValue(bytes32)"(
+    bucketID: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   bucketWithdraw(
     bucketID: BytesLike,
@@ -321,6 +428,20 @@ export class MockScriptEngine extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    bucketMerge(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "bucketMerge(bytes32,bytes32,uint256)"(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     bucketOpen(
       candidate: string,
       amount: BigNumberish,
@@ -333,12 +454,36 @@ export class MockScriptEngine extends Contract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    bucketTransferFund(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "bucketTransferFund(bytes32,bytes32,uint256)"(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     bucketUser(arg0: BytesLike, overrides?: CallOverrides): Promise<string>;
 
     "bucketUser(bytes32)"(
       arg0: BytesLike,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    bucketValue(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "bucketValue(bytes32)"(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     bucketWithdraw(
       bucketID: BytesLike,
@@ -401,6 +546,20 @@ export class MockScriptEngine extends Contract {
       overrides?: Overrides
     ): Promise<BigNumber>;
 
+    bucketMerge(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "bucketMerge(bytes32,bytes32,uint256)"(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
     bucketOpen(
       candidate: string,
       amount: BigNumberish,
@@ -413,10 +572,34 @@ export class MockScriptEngine extends Contract {
       overrides?: Overrides
     ): Promise<BigNumber>;
 
+    bucketTransferFund(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "bucketTransferFund(bytes32,bytes32,uint256)"(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
     bucketUser(arg0: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
     "bucketUser(bytes32)"(
       arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    bucketValue(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "bucketValue(bytes32)"(
+      bucketID: BytesLike,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -482,6 +665,20 @@ export class MockScriptEngine extends Contract {
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
+    bucketMerge(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "bucketMerge(bytes32,bytes32,uint256)"(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
     bucketOpen(
       candidate: string,
       amount: BigNumberish,
@@ -494,6 +691,20 @@ export class MockScriptEngine extends Contract {
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
+    bucketTransferFund(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "bucketTransferFund(bytes32,bytes32,uint256)"(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
     bucketUser(
       arg0: BytesLike,
       overrides?: CallOverrides
@@ -501,6 +712,16 @@ export class MockScriptEngine extends Contract {
 
     "bucketUser(bytes32)"(
       arg0: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    bucketValue(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "bucketValue(bytes32)"(
+      bucketID: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

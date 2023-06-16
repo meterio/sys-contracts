@@ -20,18 +20,10 @@ contract StMTRG is
     uint256 public constant CLOSE_DURATION = 30 days;
     uint256 public closeTimestamp;
 
-    enum BucketStatus {
-        invalid,
-        normal, // bucket open
-        closed, // request close
-        inTerminal, // execute close
-        finish // after 7 days
-    }
     struct Bucket {
         bytes32 bucketID;
         uint256 totalDeposit;
-        uint256 closeTimestamp;
-        BucketStatus status;
+        uint256 locked;
     }
 
     mapping(address => uint256) private _shares;
@@ -40,6 +32,9 @@ contract StMTRG is
     mapping(bytes32 => address) public bucketIDToCandidate;
     address[] private _candidates;
     mapping(address => uint256) public candidateIndex;
+    uint256 public currentIndex;
+    bool public isClose;
+    bool public inTerminal;
 
     IScriptEngine scriptEngine;
     IERC20Upgradeable public MTRG;
@@ -62,6 +57,16 @@ contract StMTRG is
     );
     event NewCandidate(address indexed candidate, bytes32 bucketID);
     event UpdateCandidate(address indexed oldCandidate, address newCandidate);
+    event TransferFund(
+        bytes32 indexed oldBucketID,
+        bytes32 indexed newBucketID,
+        uint256 amount
+    );
+    event Merge(
+        bytes32 indexed oldBucketID,
+        bytes32 indexed newBucketID,
+        uint256 amount
+    );
     event RequestClost(
         address indexed candidate,
         bytes32 bucketID,
@@ -72,11 +77,12 @@ contract StMTRG is
         bytes32 bucketID,
         uint256 timestamp
     );
-    event TerminalClost(
-        address indexed candidate,
-        bytes32 bucketID,
-        uint256 timestamp
-    );
+    event TerminalClost(uint256 timestamp);
+
+    modifier notClose() {
+        require(!isClose, "is close!");
+        _;
+    }
 
     function initialize(
         address admin,
@@ -99,7 +105,7 @@ contract StMTRG is
 
     function newCandidate(
         address candidate
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) notClose {
         require(candidate != address(0), "address error!");
         Bucket storage bucket = candidateToBucket[candidate];
         require(bucket.bucketID == bytes32(0), "candidate exsited!");
@@ -108,9 +114,8 @@ contract StMTRG is
         MTRG.transferFrom(account, address(this), amount);
         bytes32 bucketID = scriptEngine.bucketOpen(candidate, amount);
 
-        bucket.totalDeposit += amount;
+        bucket.locked += amount;
         bucket.bucketID = bucketID;
-        bucket.status = BucketStatus.normal;
 
         _candidates.push(candidate);
         candidateIndex[candidate] = _candidates.length;
@@ -121,31 +126,17 @@ contract StMTRG is
             _shares[account] += amount;
             _totalShares += amount.wadToRay();
         } else {
-            uint256 shares = _valueToShare(amount);
-            _shares[account] += shares;
-            _totalShares += shares.wadToRay();
+            uint256 shares_ = _valueToShare(amount);
+            _shares[account] += shares_;
+            _totalShares += shares_.wadToRay();
         }
         emit Transfer(address(0x0), account, amount);
+        emit Deposit(account, bucketID, amount);
     }
 
-    function _findMinDeposit() private view returns (address) {
-        Bucket memory bucket = candidateToBucket[_candidates[0]];
-        for (uint256 i = 0; i < _candidates.length - 1; ++i) {
-            Bucket memory nextBucket = candidateToBucket[_candidates[i + 1]];
-            if (
-                bucket.totalDeposit > nextBucket.totalDeposit &&
-                nextBucket.status == BucketStatus.normal
-            ) {
-                bucket = nextBucket;
-            }
-        }
-        if (bucket.status != BucketStatus.normal) revert("closed!");
-        return bucketIDToCandidate[bucket.bucketID];
-    }
-
-    // move
-    function rebase() public onlyRole(DEFAULT_ADMIN_ROLE) {
-        Bucket storage bucket = candidateToBucket[_findMinDeposit()];
+    function rebase() public onlyRole(DEFAULT_ADMIN_ROLE) notClose {
+        currentIndex = currentIndex >= _candidates.length ? 0 : currentIndex;
+        Bucket storage bucket = candidateToBucket[_candidates[currentIndex]];
         bytes32 bucketID = bucket.bucketID;
         if (bucketID == bytes32(0)) return;
         uint256 mtrgBalance = MTRG.balanceOf(address(this));
@@ -160,26 +151,84 @@ contract StMTRG is
             epoch,
             totalSupply()
         );
+        currentIndex += 1;
     }
 
     function updateCandidate(
         address oldCandidateAddr,
         address newCandidateAddr
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) notClose {
         require(newCandidateAddr != address(0), "address error!");
         Bucket memory bucket = candidateToBucket[oldCandidateAddr];
-        require(bucket.status == BucketStatus.normal, "closed!");
         scriptEngine.bucketUpdateCandidate(bucket.bucketID, newCandidateAddr);
 
         candidateToBucket[newCandidateAddr] = bucket;
         bucketIDToCandidate[bucket.bucketID] = newCandidateAddr;
         uint256 index = candidateIndex[oldCandidateAddr];
-        _candidates[index] = newCandidateAddr;
+        _candidates[index - 1] = newCandidateAddr;
         candidateIndex[newCandidateAddr] = index;
         delete candidateIndex[oldCandidateAddr];
         delete candidateToBucket[oldCandidateAddr];
 
         emit UpdateCandidate(oldCandidateAddr, newCandidateAddr);
+    }
+
+    function transferFund(
+        address candidate
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) notClose {
+        uint256 _candidateIndex = candidateIndex[candidate];
+        Bucket storage bucket = candidateToBucket[
+            _candidates[_candidateIndex - 1]
+        ];
+        uint256 nextIndex = _candidateIndex >= _candidates.length
+            ? 0
+            : _candidateIndex;
+        Bucket storage nextBucket = candidateToBucket[_candidates[nextIndex]];
+        uint256 amount = bucket.totalDeposit;
+        if (amount > 0) {
+            bucket.totalDeposit = 0;
+            nextBucket.totalDeposit += amount;
+            scriptEngine.bucketTransferFund(
+                bucket.bucketID,
+                nextBucket.bucketID,
+                amount
+            );
+            emit TransferFund(bucket.bucketID, nextBucket.bucketID, amount);
+        }
+    }
+
+    function deleteBucket(
+        address candidate
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) notClose {
+        require(_candidates.length > 1, "only 1 candidate");
+        uint256 _candidateIndex = candidateIndex[candidate];
+        Bucket storage bucket = candidateToBucket[
+            _candidates[_candidateIndex - 1]
+        ];
+        uint256 nextIndex = _candidateIndex >= _candidates.length
+            ? 0
+            : _candidateIndex;
+        Bucket storage nextBucket = candidateToBucket[_candidates[nextIndex]];
+        uint256 amount = bucket.totalDeposit + bucket.locked;
+        bucket.totalDeposit = 0;
+        bucket.locked = 0;
+        nextBucket.totalDeposit += amount;
+        scriptEngine.bucketMerge(bucket.bucketID, nextBucket.bucketID, amount);
+
+        delete bucketIDToCandidate[bucket.bucketID];
+        delete candidateToBucket[candidate];
+        if (candidateIndex[candidate] < _candidates.length) {
+            candidateIndex[
+                _candidates[_candidates.length - 1]
+            ] = candidateIndex[candidate];
+            _candidates[candidateIndex[candidate] - 1] = _candidates[
+                _candidates.length - 1
+            ];
+        }
+        _candidates.pop();
+        delete candidateIndex[candidate];
+
+        emit Merge(bucket.bucketID, nextBucket.bucketID, amount);
     }
 
     function setBlackList(address account) public onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -194,54 +243,54 @@ contract StMTRG is
         _unpause();
     }
 
-    function requestClose(
-        address candidate
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        Bucket storage bucket = _getBucket(candidate);
-        require(bucket.status == BucketStatus.normal, "is closed!");
-        bucket.status = BucketStatus.closed;
-        bucket.closeTimestamp = block.timestamp;
-        emit RequestClost(candidate, bucket.bucketID, closeTimestamp);
+    function requestClose() public onlyRole(DEFAULT_ADMIN_ROLE) notClose {
+        require(_candidates.length == 1, "candidates is more than 1");
+        Bucket memory bucket = candidateToBucket[_candidates[0]];
+        closeTimestamp = block.timestamp;
+        isClose = true;
+        emit RequestClost(_candidates[0], bucket.bucketID, closeTimestamp);
     }
 
-    function executeClose(
-        address candidate
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        Bucket storage bucket = _getBucket(candidate);
-        require(bucket.status == BucketStatus.closed, "not close!");
+    function executeClose() public onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(isClose, "is close!");
+        require(!inTerminal, "in terminal!");
+        Bucket memory bucket = candidateToBucket[_candidates[0]];
         require(
             block.timestamp >= closeTimestamp + CLOSE_DURATION,
             "CLOSE_DURATION!"
         );
-        bucket.status = BucketStatus.inTerminal;
+        inTerminal = true;
         scriptEngine.bucketClose(bucket.bucketID);
-        emit ExecuteClost(candidate, bucket.bucketID, closeTimestamp);
+        emit ExecuteClost(_candidates[0], bucket.bucketID, closeTimestamp);
     }
 
-    function closeTerminal(
-        address candidate
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        Bucket storage bucket = _getBucket(candidate);
-        require(bucket.status == BucketStatus.inTerminal, "not in terminal!");
-        bucket.status = BucketStatus.finish;
-        bucket.totalDeposit = 0;
-        emit TerminalClost(candidate, bucket.bucketID, closeTimestamp);
+    function closeTerminal() public onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(inTerminal, "not in terminal!");
+        Bucket memory bucket = candidateToBucket[_candidates[currentIndex]];
+
+        delete candidateToBucket[_candidates[0]];
+        delete bucketIDToCandidate[bucket.bucketID];
+        delete candidateIndex[_candidates[0]];
+        delete _candidates;
+        inTerminal = false;
+        emit TerminalClost(block.timestamp);
     }
 
-    function deposit(uint256 amount) public whenNotPaused {
-        Bucket storage bucket = candidateToBucket[_findMinDeposit()];
-        require(bucket.status == BucketStatus.normal, "closed!");
+    function deposit(uint256 amount) public whenNotPaused notClose {
+        currentIndex = currentIndex >= _candidates.length ? 0 : currentIndex;
+        Bucket storage bucket = candidateToBucket[_candidates[currentIndex]];
         require(_totalShares > 0, "totalShares = 0");
         address account = msg.sender;
         MTRG.transferFrom(account, address(this), amount);
         scriptEngine.bucketDeposit(bucket.bucketID, amount);
 
-        uint256 shares = _valueToShare(amount);
-        _shares[account] += shares;
-        _totalShares += shares.wadToRay();
+        uint256 shares_ = _valueToShare(amount);
+        _shares[account] += shares_;
+        _totalShares += shares_.wadToRay();
         bucket.totalDeposit += amount;
         emit Transfer(address(0x0), account, amount);
         emit Deposit(account, bucket.bucketID, amount);
+        currentIndex += 1;
     }
 
     function _withdraw(
@@ -261,34 +310,25 @@ contract StMTRG is
             _totalShares -= burnShares.wadToRay();
         }
         emit Transfer(account, address(0), amount);
-
-        for (uint256 i = 0; i < _candidates.length - 1; ++i) {
-            Bucket memory bucket = candidateToBucket[_candidates[i]];
-            if (bucket.status != BucketStatus.inTerminal) {
-                if (amount >= bucket.totalDeposit) {
-                    amount -= bucket.totalDeposit;
-                    bucket.totalDeposit = 0;
-                    scriptEngine.bucketWithdraw(
-                        bucket.bucketID,
-                        bucket.totalDeposit,
-                        recipient
-                    );
-                    emit Withdraw(
-                        account,
-                        bucket.bucketID,
-                        bucket.totalDeposit
-                    );
-                } else {
-                    bucket.totalDeposit -= amount;
-                    amount = 0;
-                    scriptEngine.bucketWithdraw(
-                        bucket.bucketID,
-                        amount,
-                        recipient
-                    );
-                    emit Withdraw(account, bucket.bucketID, amount);
-                }
+        currentIndex = currentIndex >= _candidates.length ? 0 : currentIndex;
+        for (uint256 i; i < _candidates.length; ++i) {
+            Bucket storage bucket = candidateToBucket[
+                _candidates[currentIndex]
+            ];
+            uint256 sendAmount;
+            if (amount >= bucket.totalDeposit) {
+                sendAmount = bucket.totalDeposit;
+                amount -= bucket.totalDeposit;
+                bucket.totalDeposit = 0;
+            } else {
+                sendAmount = amount;
+                bucket.totalDeposit -= amount;
+                amount = 0;
             }
+            scriptEngine.bucketWithdraw(bucket.bucketID, sendAmount, recipient);
+            emit Withdraw(account, bucket.bucketID, sendAmount);
+            if (amount == 0) break;
+            currentIndex += 1;
         }
         if (amount > 0) {
             uint256 balance = MTRG.balanceOf(address(this));
@@ -298,10 +338,12 @@ contract StMTRG is
     }
 
     function withdraw(uint256 amount, address recipient) public whenNotPaused {
+        require(!inTerminal, "in terminal!");
         _withdraw(msg.sender, amount, recipient);
     }
 
-    function exit(address recipient) public whenNotPaused {
+    function withdrawAll(address recipient) public whenNotPaused {
+        require(!inTerminal, "in terminal!");
         address account = msg.sender;
         uint256 amount = balanceOf(account);
         _withdraw(account, amount, recipient);
@@ -333,13 +375,27 @@ contract StMTRG is
         return _candidates;
     }
 
+    function bucketValue(bytes32 bucketID) public view returns (uint256) {
+        return scriptEngine.bucketValue(bucketID);
+    }
+
+    function allBuckets() public view returns (Bucket[] memory) {
+        uint256 length = _candidates.length;
+        Bucket[] memory buckets = new Bucket[](length);
+        for (uint256 i = 0; i < _candidates.length; ++i) {
+            buckets[i] = candidateToBucket[_candidates[i]];
+        }
+        return buckets;
+    }
+
     function shareToValue(uint256 _share) public view returns (uint256) {
         uint256 _totalSupply = MTRG.balanceOf(address(this));
         for (uint256 i = 0; i < _candidates.length; ++i) {
             Bucket memory bucket = candidateToBucket[_candidates[i]];
             _totalSupply += bucket.totalDeposit;
+            _totalSupply += bucket.locked;
         }
-        return _share.wadToRay().rayMul(_totalSupply).rayDiv(_totalShares);
+        return (_share.rayMul(_totalSupply)).rayDiv(_totalShares).wadToRay();
     }
 
     function valueToShare(uint256 _value) public view returns (uint256) {
@@ -351,6 +407,7 @@ contract StMTRG is
         for (uint256 i = 0; i < _candidates.length; ++i) {
             Bucket memory bucket = candidateToBucket[_candidates[i]];
             _totalSupply += bucket.totalDeposit;
+            _totalSupply += bucket.locked;
         }
         return _value.rayMul(_totalShares).rayDiv(_totalSupply).rayToWad();
     }
@@ -369,25 +426,19 @@ contract StMTRG is
             "ERC20: account is in black list"
         );
 
-        uint256 shares = _valueToShare(_value);
+        uint256 shares_ = _valueToShare(_value);
         uint256 fromShares = _shares[_from];
-        require(fromShares >= shares, "ERC20: transfer amount exceeds balance");
+        require(
+            fromShares >= shares_,
+            "ERC20: transfer amount exceeds balance"
+        );
         unchecked {
-            _shares[_from] = fromShares - shares;
-            _shares[_to] += shares;
+            _shares[_from] = fromShares - shares_;
+            _shares[_to] += shares_;
         }
 
         emit Transfer(_from, _to, _value);
 
         _afterTokenTransfer(_from, _to, _value);
-    }
-
-    function _getBucket(
-        address candidate
-    ) private view returns (Bucket storage bucket) {
-        require(candidate != address(0), "address error!");
-        bucket = candidateToBucket[candidate];
-        require(bucket.bucketID != bytes32(0), "Bucket not existed");
-        return bucket;
     }
 }

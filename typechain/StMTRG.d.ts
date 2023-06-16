@@ -26,28 +26,33 @@ interface StMTRGInterface extends ethers.utils.Interface {
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "DOMAIN_SEPARATOR()": FunctionFragment;
     "MTRG()": FunctionFragment;
+    "allBuckets()": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "bucketIDToCandidate(bytes32)": FunctionFragment;
+    "bucketValue(bytes32)": FunctionFragment;
     "candidateIndex(address)": FunctionFragment;
     "candidateToBucket(address)": FunctionFragment;
     "candidates()": FunctionFragment;
-    "closeTerminal(address)": FunctionFragment;
+    "closeTerminal()": FunctionFragment;
     "closeTimestamp()": FunctionFragment;
+    "currentIndex()": FunctionFragment;
     "decimals()": FunctionFragment;
     "decreaseAllowance(address,uint256)": FunctionFragment;
+    "deleteBucket(address)": FunctionFragment;
     "deposit(uint256)": FunctionFragment;
     "epoch()": FunctionFragment;
-    "executeClose(address)": FunctionFragment;
-    "exit(address)": FunctionFragment;
+    "executeClose()": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "getRoleMember(bytes32,uint256)": FunctionFragment;
     "getRoleMemberCount(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
+    "inTerminal()": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
     "initialize(address,address,address)": FunctionFragment;
+    "isClose()": FunctionFragment;
     "name()": FunctionFragment;
     "newCandidate(address)": FunctionFragment;
     "nonces(address)": FunctionFragment;
@@ -56,7 +61,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
     "permit(address,address,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
     "rebase()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
-    "requestClose(address)": FunctionFragment;
+    "requestClose()": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
     "setBlackList(address)": FunctionFragment;
     "shareToValue(uint256)": FunctionFragment;
@@ -67,10 +72,12 @@ interface StMTRGInterface extends ethers.utils.Interface {
     "totalSupply()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
+    "transferFund(address)": FunctionFragment;
     "unpause()": FunctionFragment;
     "updateCandidate(address,address)": FunctionFragment;
     "valueToShare(uint256)": FunctionFragment;
     "withdraw(uint256,address)": FunctionFragment;
+    "withdrawAll(address)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -87,6 +94,10 @@ interface StMTRGInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "MTRG", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "allBuckets",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "allowance",
     values: [string, string]
   ): string;
@@ -97,6 +108,10 @@ interface StMTRGInterface extends ethers.utils.Interface {
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
   encodeFunctionData(
     functionFragment: "bucketIDToCandidate",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "bucketValue",
     values: [BytesLike]
   ): string;
   encodeFunctionData(
@@ -113,10 +128,14 @@ interface StMTRGInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "closeTerminal",
-    values: [string]
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "closeTimestamp",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "currentIndex",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
@@ -125,15 +144,18 @@ interface StMTRGInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "deleteBucket",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "deposit",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "epoch", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "executeClose",
-    values: [string]
+    values?: undefined
   ): string;
-  encodeFunctionData(functionFragment: "exit", values: [string]): string;
   encodeFunctionData(
     functionFragment: "getRoleAdmin",
     values: [BytesLike]
@@ -155,6 +177,10 @@ interface StMTRGInterface extends ethers.utils.Interface {
     values: [BytesLike, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "inTerminal",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "increaseAllowance",
     values: [string, BigNumberish]
   ): string;
@@ -162,6 +188,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
     functionFragment: "initialize",
     values: [string, string, string]
   ): string;
+  encodeFunctionData(functionFragment: "isClose", values?: undefined): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "newCandidate",
@@ -189,7 +216,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "requestClose",
-    values: [string]
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "revokeRole",
@@ -225,6 +252,10 @@ interface StMTRGInterface extends ethers.utils.Interface {
     functionFragment: "transferFrom",
     values: [string, string, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "transferFund",
+    values: [string]
+  ): string;
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "updateCandidate",
@@ -238,6 +269,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
     functionFragment: "withdraw",
     values: [BigNumberish, string]
   ): string;
+  encodeFunctionData(functionFragment: "withdrawAll", values: [string]): string;
 
   decodeFunctionResult(
     functionFragment: "CLOSE_DURATION",
@@ -252,11 +284,16 @@ interface StMTRGInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "MTRG", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "allBuckets", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "bucketIDToCandidate",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "bucketValue",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -276,9 +313,17 @@ interface StMTRGInterface extends ethers.utils.Interface {
     functionFragment: "closeTimestamp",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "currentIndex",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "decreaseAllowance",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "deleteBucket",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
@@ -287,7 +332,6 @@ interface StMTRGInterface extends ethers.utils.Interface {
     functionFragment: "executeClose",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "exit", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getRoleAdmin",
     data: BytesLike
@@ -302,11 +346,13 @@ interface StMTRGInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "inTerminal", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "increaseAllowance",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "isClose", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "newCandidate",
@@ -353,6 +399,10 @@ interface StMTRGInterface extends ethers.utils.Interface {
     functionFragment: "transferFrom",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferFund",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "updateCandidate",
@@ -363,6 +413,10 @@ interface StMTRGInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "withdrawAll",
+    data: BytesLike
+  ): Result;
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
@@ -370,14 +424,16 @@ interface StMTRGInterface extends ethers.utils.Interface {
     "ExecuteClost(address,bytes32,uint256)": EventFragment;
     "Initialized(uint8)": EventFragment;
     "LogRebase(bytes32,address,uint256,uint256)": EventFragment;
+    "Merge(bytes32,bytes32,uint256)": EventFragment;
     "NewCandidate(address,bytes32)": EventFragment;
     "Paused(address)": EventFragment;
     "RequestClost(address,bytes32,uint256)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
-    "TerminalClost(address,bytes32,uint256)": EventFragment;
+    "TerminalClost(uint256)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
+    "TransferFund(bytes32,bytes32,uint256)": EventFragment;
     "Unpaused(address)": EventFragment;
     "UpdateCandidate(address,address)": EventFragment;
     "Withdraw(address,bytes32,uint256)": EventFragment;
@@ -388,6 +444,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "ExecuteClost"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "LogRebase"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Merge"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewCandidate"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Paused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RequestClost"): EventFragment;
@@ -396,6 +453,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TerminalClost"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TransferFund"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "UpdateCandidate"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Withdraw"): EventFragment;
@@ -445,6 +503,28 @@ export class StMTRG extends Contract {
 
     "MTRG()"(overrides?: CallOverrides): Promise<{
       0: string;
+    }>;
+
+    allBuckets(overrides?: CallOverrides): Promise<{
+      0: {
+        bucketID: string;
+        totalDeposit: BigNumber;
+        locked: BigNumber;
+        0: string;
+        1: BigNumber;
+        2: BigNumber;
+      }[];
+    }>;
+
+    "allBuckets()"(overrides?: CallOverrides): Promise<{
+      0: {
+        bucketID: string;
+        totalDeposit: BigNumber;
+        locked: BigNumber;
+        0: string;
+        1: BigNumber;
+        2: BigNumber;
+      }[];
     }>;
 
     allowance(
@@ -503,6 +583,20 @@ export class StMTRG extends Contract {
       0: string;
     }>;
 
+    bucketValue(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
+
+    "bucketValue(bytes32)"(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
+
     candidateIndex(
       arg0: string,
       overrides?: CallOverrides
@@ -523,12 +617,10 @@ export class StMTRG extends Contract {
     ): Promise<{
       bucketID: string;
       totalDeposit: BigNumber;
-      closeTimestamp: BigNumber;
-      status: number;
+      locked: BigNumber;
       0: string;
       1: BigNumber;
       2: BigNumber;
-      3: number;
     }>;
 
     "candidateToBucket(address)"(
@@ -537,12 +629,10 @@ export class StMTRG extends Contract {
     ): Promise<{
       bucketID: string;
       totalDeposit: BigNumber;
-      closeTimestamp: BigNumber;
-      status: number;
+      locked: BigNumber;
       0: string;
       1: BigNumber;
       2: BigNumber;
-      3: number;
     }>;
 
     candidates(overrides?: CallOverrides): Promise<{
@@ -553,21 +643,23 @@ export class StMTRG extends Contract {
       0: string[];
     }>;
 
-    closeTerminal(
-      candidate: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    closeTerminal(overrides?: Overrides): Promise<ContractTransaction>;
 
-    "closeTerminal(address)"(
-      candidate: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    "closeTerminal()"(overrides?: Overrides): Promise<ContractTransaction>;
 
     closeTimestamp(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
     "closeTimestamp()"(overrides?: CallOverrides): Promise<{
+      0: BigNumber;
+    }>;
+
+    currentIndex(overrides?: CallOverrides): Promise<{
+      0: BigNumber;
+    }>;
+
+    "currentIndex()"(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
@@ -591,6 +683,16 @@ export class StMTRG extends Contract {
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
+    deleteBucket(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "deleteBucket(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
     deposit(
       amount: BigNumberish,
       overrides?: Overrides
@@ -609,25 +711,9 @@ export class StMTRG extends Contract {
       0: BigNumber;
     }>;
 
-    executeClose(
-      candidate: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    executeClose(overrides?: Overrides): Promise<ContractTransaction>;
 
-    "executeClose(address)"(
-      candidate: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    exit(
-      recipient: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "exit(address)"(
-      recipient: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    "executeClose()"(overrides?: Overrides): Promise<ContractTransaction>;
 
     getRoleAdmin(
       role: BytesLike,
@@ -701,6 +787,14 @@ export class StMTRG extends Contract {
       0: boolean;
     }>;
 
+    inTerminal(overrides?: CallOverrides): Promise<{
+      0: boolean;
+    }>;
+
+    "inTerminal()"(overrides?: CallOverrides): Promise<{
+      0: boolean;
+    }>;
+
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
@@ -726,6 +820,14 @@ export class StMTRG extends Contract {
       scriptEngineAddr: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
+
+    isClose(overrides?: CallOverrides): Promise<{
+      0: boolean;
+    }>;
+
+    "isClose()"(overrides?: CallOverrides): Promise<{
+      0: boolean;
+    }>;
 
     name(overrides?: CallOverrides): Promise<{
       0: string;
@@ -809,15 +911,9 @@ export class StMTRG extends Contract {
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    requestClose(
-      candidate: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    requestClose(overrides?: Overrides): Promise<ContractTransaction>;
 
-    "requestClose(address)"(
-      candidate: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    "requestClose()"(overrides?: Overrides): Promise<ContractTransaction>;
 
     revokeRole(
       role: BytesLike,
@@ -933,6 +1029,16 @@ export class StMTRG extends Contract {
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
+    transferFund(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "transferFund(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
     unpause(overrides?: Overrides): Promise<ContractTransaction>;
 
     "unpause()"(overrides?: Overrides): Promise<ContractTransaction>;
@@ -974,6 +1080,16 @@ export class StMTRG extends Contract {
       recipient: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
+
+    withdrawAll(
+      recipient: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "withdrawAll(address)"(
+      recipient: string,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
   };
 
   CLOSE_DURATION(overrides?: CallOverrides): Promise<BigNumber>;
@@ -991,6 +1107,32 @@ export class StMTRG extends Contract {
   MTRG(overrides?: CallOverrides): Promise<string>;
 
   "MTRG()"(overrides?: CallOverrides): Promise<string>;
+
+  allBuckets(
+    overrides?: CallOverrides
+  ): Promise<
+    {
+      bucketID: string;
+      totalDeposit: BigNumber;
+      locked: BigNumber;
+      0: string;
+      1: BigNumber;
+      2: BigNumber;
+    }[]
+  >;
+
+  "allBuckets()"(
+    overrides?: CallOverrides
+  ): Promise<
+    {
+      bucketID: string;
+      totalDeposit: BigNumber;
+      locked: BigNumber;
+      0: string;
+      1: BigNumber;
+      2: BigNumber;
+    }[]
+  >;
 
   allowance(
     owner: string,
@@ -1033,6 +1175,16 @@ export class StMTRG extends Contract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  bucketValue(
+    bucketID: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  "bucketValue(bytes32)"(
+    bucketID: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   candidateIndex(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   "candidateIndex(address)"(
@@ -1046,12 +1198,10 @@ export class StMTRG extends Contract {
   ): Promise<{
     bucketID: string;
     totalDeposit: BigNumber;
-    closeTimestamp: BigNumber;
-    status: number;
+    locked: BigNumber;
     0: string;
     1: BigNumber;
     2: BigNumber;
-    3: number;
   }>;
 
   "candidateToBucket(address)"(
@@ -1060,31 +1210,27 @@ export class StMTRG extends Contract {
   ): Promise<{
     bucketID: string;
     totalDeposit: BigNumber;
-    closeTimestamp: BigNumber;
-    status: number;
+    locked: BigNumber;
     0: string;
     1: BigNumber;
     2: BigNumber;
-    3: number;
   }>;
 
   candidates(overrides?: CallOverrides): Promise<string[]>;
 
   "candidates()"(overrides?: CallOverrides): Promise<string[]>;
 
-  closeTerminal(
-    candidate: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
+  closeTerminal(overrides?: Overrides): Promise<ContractTransaction>;
 
-  "closeTerminal(address)"(
-    candidate: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
+  "closeTerminal()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   closeTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
   "closeTimestamp()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+  currentIndex(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "currentIndex()"(overrides?: CallOverrides): Promise<BigNumber>;
 
   decimals(overrides?: CallOverrides): Promise<number>;
 
@@ -1102,6 +1248,16 @@ export class StMTRG extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
+  deleteBucket(
+    candidate: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "deleteBucket(address)"(
+    candidate: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
   deposit(
     amount: BigNumberish,
     overrides?: Overrides
@@ -1116,22 +1272,9 @@ export class StMTRG extends Contract {
 
   "epoch()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-  executeClose(
-    candidate: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
+  executeClose(overrides?: Overrides): Promise<ContractTransaction>;
 
-  "executeClose(address)"(
-    candidate: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  exit(recipient: string, overrides?: Overrides): Promise<ContractTransaction>;
-
-  "exit(address)"(
-    recipient: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
+  "executeClose()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
 
@@ -1186,6 +1329,10 @@ export class StMTRG extends Contract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  inTerminal(overrides?: CallOverrides): Promise<boolean>;
+
+  "inTerminal()"(overrides?: CallOverrides): Promise<boolean>;
+
   increaseAllowance(
     spender: string,
     addedValue: BigNumberish,
@@ -1211,6 +1358,10 @@ export class StMTRG extends Contract {
     scriptEngineAddr: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
+
+  isClose(overrides?: CallOverrides): Promise<boolean>;
+
+  "isClose()"(overrides?: CallOverrides): Promise<boolean>;
 
   name(overrides?: CallOverrides): Promise<string>;
 
@@ -1279,15 +1430,9 @@ export class StMTRG extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  requestClose(
-    candidate: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
+  requestClose(overrides?: Overrides): Promise<ContractTransaction>;
 
-  "requestClose(address)"(
-    candidate: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
+  "requestClose()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   revokeRole(
     role: BytesLike,
@@ -1376,6 +1521,16 @@ export class StMTRG extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
+  transferFund(
+    candidate: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "transferFund(address)"(
+    candidate: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
   unpause(overrides?: Overrides): Promise<ContractTransaction>;
 
   "unpause()"(overrides?: Overrides): Promise<ContractTransaction>;
@@ -1414,6 +1569,16 @@ export class StMTRG extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
+  withdrawAll(
+    recipient: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "withdrawAll(address)"(
+    recipient: string,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
   callStatic: {
     CLOSE_DURATION(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1430,6 +1595,32 @@ export class StMTRG extends Contract {
     MTRG(overrides?: CallOverrides): Promise<string>;
 
     "MTRG()"(overrides?: CallOverrides): Promise<string>;
+
+    allBuckets(
+      overrides?: CallOverrides
+    ): Promise<
+      {
+        bucketID: string;
+        totalDeposit: BigNumber;
+        locked: BigNumber;
+        0: string;
+        1: BigNumber;
+        2: BigNumber;
+      }[]
+    >;
+
+    "allBuckets()"(
+      overrides?: CallOverrides
+    ): Promise<
+      {
+        bucketID: string;
+        totalDeposit: BigNumber;
+        locked: BigNumber;
+        0: string;
+        1: BigNumber;
+        2: BigNumber;
+      }[]
+    >;
 
     allowance(
       owner: string,
@@ -1472,6 +1663,16 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    bucketValue(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "bucketValue(bytes32)"(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     candidateIndex(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     "candidateIndex(address)"(
@@ -1485,12 +1686,10 @@ export class StMTRG extends Contract {
     ): Promise<{
       bucketID: string;
       totalDeposit: BigNumber;
-      closeTimestamp: BigNumber;
-      status: number;
+      locked: BigNumber;
       0: string;
       1: BigNumber;
       2: BigNumber;
-      3: number;
     }>;
 
     "candidateToBucket(address)"(
@@ -1499,28 +1698,27 @@ export class StMTRG extends Contract {
     ): Promise<{
       bucketID: string;
       totalDeposit: BigNumber;
-      closeTimestamp: BigNumber;
-      status: number;
+      locked: BigNumber;
       0: string;
       1: BigNumber;
       2: BigNumber;
-      3: number;
     }>;
 
     candidates(overrides?: CallOverrides): Promise<string[]>;
 
     "candidates()"(overrides?: CallOverrides): Promise<string[]>;
 
-    closeTerminal(candidate: string, overrides?: CallOverrides): Promise<void>;
+    closeTerminal(overrides?: CallOverrides): Promise<void>;
 
-    "closeTerminal(address)"(
-      candidate: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    "closeTerminal()"(overrides?: CallOverrides): Promise<void>;
 
     closeTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
     "closeTimestamp()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    currentIndex(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "currentIndex()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     decimals(overrides?: CallOverrides): Promise<number>;
 
@@ -1538,6 +1736,13 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    deleteBucket(candidate: string, overrides?: CallOverrides): Promise<void>;
+
+    "deleteBucket(address)"(
+      candidate: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     deposit(amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     "deposit(uint256)"(
@@ -1549,19 +1754,9 @@ export class StMTRG extends Contract {
 
     "epoch()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    executeClose(candidate: string, overrides?: CallOverrides): Promise<void>;
+    executeClose(overrides?: CallOverrides): Promise<void>;
 
-    "executeClose(address)"(
-      candidate: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    exit(recipient: string, overrides?: CallOverrides): Promise<void>;
-
-    "exit(address)"(
-      recipient: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    "executeClose()"(overrides?: CallOverrides): Promise<void>;
 
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
 
@@ -1616,6 +1811,10 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    inTerminal(overrides?: CallOverrides): Promise<boolean>;
+
+    "inTerminal()"(overrides?: CallOverrides): Promise<boolean>;
+
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
@@ -1641,6 +1840,10 @@ export class StMTRG extends Contract {
       scriptEngineAddr: string,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    isClose(overrides?: CallOverrides): Promise<boolean>;
+
+    "isClose()"(overrides?: CallOverrides): Promise<boolean>;
 
     name(overrides?: CallOverrides): Promise<string>;
 
@@ -1706,12 +1909,9 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    requestClose(candidate: string, overrides?: CallOverrides): Promise<void>;
+    requestClose(overrides?: CallOverrides): Promise<void>;
 
-    "requestClose(address)"(
-      candidate: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    "requestClose()"(overrides?: CallOverrides): Promise<void>;
 
     revokeRole(
       role: BytesLike,
@@ -1797,6 +1997,13 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    transferFund(candidate: string, overrides?: CallOverrides): Promise<void>;
+
+    "transferFund(address)"(
+      candidate: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     unpause(overrides?: CallOverrides): Promise<void>;
 
     "unpause()"(overrides?: CallOverrides): Promise<void>;
@@ -1834,6 +2041,13 @@ export class StMTRG extends Contract {
       recipient: string,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    withdrawAll(recipient: string, overrides?: CallOverrides): Promise<void>;
+
+    "withdrawAll(address)"(
+      recipient: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {
@@ -1864,6 +2078,12 @@ export class StMTRG extends Contract {
       totalSupply: null
     ): EventFilter;
 
+    Merge(
+      oldBucketID: BytesLike | null,
+      newBucketID: BytesLike | null,
+      amount: null
+    ): EventFilter;
+
     NewCandidate(candidate: string | null, bucketID: null): EventFilter;
 
     Paused(account: null): EventFilter;
@@ -1892,13 +2112,15 @@ export class StMTRG extends Contract {
       sender: string | null
     ): EventFilter;
 
-    TerminalClost(
-      candidate: string | null,
-      bucketID: null,
-      timestamp: null
-    ): EventFilter;
+    TerminalClost(timestamp: null): EventFilter;
 
     Transfer(from: string | null, to: string | null, value: null): EventFilter;
+
+    TransferFund(
+      oldBucketID: BytesLike | null,
+      newBucketID: BytesLike | null,
+      amount: null
+    ): EventFilter;
 
     Unpaused(account: null): EventFilter;
 
@@ -1930,6 +2152,10 @@ export class StMTRG extends Contract {
     MTRG(overrides?: CallOverrides): Promise<BigNumber>;
 
     "MTRG()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    allBuckets(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "allBuckets()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     allowance(
       owner: string,
@@ -1972,6 +2198,16 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    bucketValue(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "bucketValue(bytes32)"(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     candidateIndex(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     "candidateIndex(address)"(
@@ -1993,16 +2229,17 @@ export class StMTRG extends Contract {
 
     "candidates()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    closeTerminal(candidate: string, overrides?: Overrides): Promise<BigNumber>;
+    closeTerminal(overrides?: Overrides): Promise<BigNumber>;
 
-    "closeTerminal(address)"(
-      candidate: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
+    "closeTerminal()"(overrides?: Overrides): Promise<BigNumber>;
 
     closeTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
     "closeTimestamp()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    currentIndex(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "currentIndex()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -2020,6 +2257,13 @@ export class StMTRG extends Contract {
       overrides?: Overrides
     ): Promise<BigNumber>;
 
+    deleteBucket(candidate: string, overrides?: Overrides): Promise<BigNumber>;
+
+    "deleteBucket(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
     deposit(amount: BigNumberish, overrides?: Overrides): Promise<BigNumber>;
 
     "deposit(uint256)"(
@@ -2031,19 +2275,9 @@ export class StMTRG extends Contract {
 
     "epoch()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    executeClose(candidate: string, overrides?: Overrides): Promise<BigNumber>;
+    executeClose(overrides?: Overrides): Promise<BigNumber>;
 
-    "executeClose(address)"(
-      candidate: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    exit(recipient: string, overrides?: Overrides): Promise<BigNumber>;
-
-    "exit(address)"(
-      recipient: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
+    "executeClose()"(overrides?: Overrides): Promise<BigNumber>;
 
     getRoleAdmin(
       role: BytesLike,
@@ -2101,6 +2335,10 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    inTerminal(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "inTerminal()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
@@ -2126,6 +2364,10 @@ export class StMTRG extends Contract {
       scriptEngineAddr: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
+
+    isClose(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "isClose()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -2191,12 +2433,9 @@ export class StMTRG extends Contract {
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    requestClose(candidate: string, overrides?: Overrides): Promise<BigNumber>;
+    requestClose(overrides?: Overrides): Promise<BigNumber>;
 
-    "requestClose(address)"(
-      candidate: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
+    "requestClose()"(overrides?: Overrides): Promise<BigNumber>;
 
     revokeRole(
       role: BytesLike,
@@ -2282,6 +2521,13 @@ export class StMTRG extends Contract {
       overrides?: Overrides
     ): Promise<BigNumber>;
 
+    transferFund(candidate: string, overrides?: Overrides): Promise<BigNumber>;
+
+    "transferFund(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
     unpause(overrides?: Overrides): Promise<BigNumber>;
 
     "unpause()"(overrides?: Overrides): Promise<BigNumber>;
@@ -2319,6 +2565,13 @@ export class StMTRG extends Contract {
       recipient: string,
       overrides?: Overrides
     ): Promise<BigNumber>;
+
+    withdrawAll(recipient: string, overrides?: Overrides): Promise<BigNumber>;
+
+    "withdrawAll(address)"(
+      recipient: string,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -2345,6 +2598,10 @@ export class StMTRG extends Contract {
     MTRG(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "MTRG()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    allBuckets(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "allBuckets()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     allowance(
       owner: string,
@@ -2390,6 +2647,16 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    bucketValue(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "bucketValue(bytes32)"(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     candidateIndex(
       arg0: string,
       overrides?: CallOverrides
@@ -2414,21 +2681,19 @@ export class StMTRG extends Contract {
 
     "candidates()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    closeTerminal(
-      candidate: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
+    closeTerminal(overrides?: Overrides): Promise<PopulatedTransaction>;
 
-    "closeTerminal(address)"(
-      candidate: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
+    "closeTerminal()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     closeTimestamp(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "closeTimestamp()"(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    currentIndex(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "currentIndex()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -2446,6 +2711,16 @@ export class StMTRG extends Contract {
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
+    deleteBucket(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "deleteBucket(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
     deposit(
       amount: BigNumberish,
       overrides?: Overrides
@@ -2460,25 +2735,9 @@ export class StMTRG extends Contract {
 
     "epoch()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    executeClose(
-      candidate: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
+    executeClose(overrides?: Overrides): Promise<PopulatedTransaction>;
 
-    "executeClose(address)"(
-      candidate: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    exit(
-      recipient: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "exit(address)"(
-      recipient: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
+    "executeClose()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     getRoleAdmin(
       role: BytesLike,
@@ -2536,6 +2795,10 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    inTerminal(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "inTerminal()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
@@ -2561,6 +2824,10 @@ export class StMTRG extends Contract {
       scriptEngineAddr: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
+
+    isClose(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "isClose()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -2632,15 +2899,9 @@ export class StMTRG extends Contract {
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    requestClose(
-      candidate: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
+    requestClose(overrides?: Overrides): Promise<PopulatedTransaction>;
 
-    "requestClose(address)"(
-      candidate: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
+    "requestClose()"(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     revokeRole(
       role: BytesLike,
@@ -2732,6 +2993,16 @@ export class StMTRG extends Contract {
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
+    transferFund(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "transferFund(address)"(
+      candidate: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
     unpause(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     "unpause()"(overrides?: Overrides): Promise<PopulatedTransaction>;
@@ -2766,6 +3037,16 @@ export class StMTRG extends Contract {
 
     "withdraw(uint256,address)"(
       amount: BigNumberish,
+      recipient: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    withdrawAll(
+      recipient: string,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "withdrawAll(address)"(
       recipient: string,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;

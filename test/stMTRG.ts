@@ -13,9 +13,6 @@ import { BigNumber, constants, ContractTransaction, Wallet } from "ethers";
 const { expect } = chai;
 
 describe("treasury tests", function() {
-  let snapshotBefore: string;
-  let snapshot: string;
-
   let deployer: Wallet;
   let user1: Wallet;
   let user2: Wallet;
@@ -135,10 +132,8 @@ describe("treasury tests", function() {
   it("user1 deposit", async function() {
     let bucket = await stMTRG.candidateToBucket(user1.address);
     let totalDeposit = bucket.totalDeposit;
-
     await mtrg.connect(user1).approve(stMTRG.address, depositAmount);
     receipt = await stMTRG.connect(user1).deposit(depositAmount);
-
     const balance1 = await stMTRG.balanceOf(user1.address);
     expect(balance1).equal(depositAmount);
     bucket = await stMTRG.candidateToBucket(user1.address);
@@ -148,10 +143,8 @@ describe("treasury tests", function() {
   it("user2 deposit", async function() {
     let bucket = await stMTRG.candidateToBucket(user2.address);
     let totalDeposit = bucket.totalDeposit;
-
     await mtrg.connect(user2).approve(stMTRG.address, depositAmount);
     receipt = await stMTRG.connect(user2).deposit(depositAmount);
-
     const balance1 = await stMTRG.balanceOf(user2.address);
     expect(balance1).equal(depositAmount);
     bucket = await stMTRG.candidateToBucket(user2.address);
@@ -159,23 +152,19 @@ describe("treasury tests", function() {
   });
 
   it("requestClose", async function() {
-    const candidates = await stMTRG.candidates();
-    const candidate = candidates[2];
-    await stMTRG.requestClose(candidate);
-    const bucket = await stMTRG.candidateToBucket(candidate);
-    expect(bucket.status).equal(2);
+    await expect(stMTRG.requestClose()).to.be.revertedWith(
+      "candidates is more than 1"
+    );
   });
 
-  it("user3 deposit to candidate 4", async function() {
-    let bucket = await stMTRG.candidateToBucket(user4.address);
+  it("user3 deposit", async function() {
+    let bucket = await stMTRG.candidateToBucket(user3.address);
     let totalDeposit = bucket.totalDeposit;
-
     await mtrg.connect(user3).approve(stMTRG.address, depositAmount);
     receipt = await stMTRG.connect(user3).deposit(depositAmount);
-
     const balance1 = await stMTRG.balanceOf(user3.address);
     expect(balance1).equal(depositAmount);
-    bucket = await stMTRG.candidateToBucket(user4.address);
+    bucket = await stMTRG.candidateToBucket(user3.address);
     expect(bucket.totalDeposit).equal(totalDeposit.add(depositAmount));
   });
 
@@ -200,69 +189,105 @@ describe("treasury tests", function() {
     const currentAmount = parseUnits("100")
       .mul(parseUnits("880"))
       .div(parseUnits("800"));
-
-      const share1 = await stMTRG.shares(user1.address);
-      console.log("share1:",share1.toString());
-      const balance1 = await stMTRG.balanceOf(user1.address);
-      console.log("balance1:",balance1.toString());
-      const totalShares = await stMTRG.totalShares();
-      console.log("totalShares:",totalShares.toString());
-      const totalSupply = await stMTRG.totalSupply();
-      console.log("totalSupply:",totalSupply.toString());
     expect(await stMTRG.balanceOf(user1.address)).equal(currentAmount);
   });
 
   it("user1 deposit 2", async function() {
-    const depositAmount = parseUnits("100");
     await mtrg.connect(user1).approve(stMTRG.address, depositAmount);
-    const balanceBefore = await stMTRG.balanceOf(user1.address);
-    console.log("balanceBefore:",balanceBefore.toString())
     receipt = await stMTRG.connect(user1).deposit(depositAmount);
-
     const userBalance = await stMTRG.balanceOf(user1.address);
-    console.log("userBalance:", userBalance);
     expect(userBalance).equal(parseUnits("210"));
-
-    const share1 = await stMTRG.shares(user1.address);
-    console.log("share1:",share1.toString());
-    const balance1 = await stMTRG.balanceOf(user1.address);
-    console.log("balance1:",balance1.toString());
-    const totalShares = await stMTRG.totalShares();
-    console.log("totalShares:",totalShares.toString());
-    const totalSupply = await stMTRG.totalSupply();
-    console.log("totalSupply:",totalSupply.toString());
   });
 
   it("user1 transfer", async function() {
     const balance1 = await stMTRG.balanceOf(user1.address);
     const balance2 = await stMTRG.balanceOf(user2.address);
-    const share1 = await stMTRG.shares(user1.address);
-    const share2 = await stMTRG.shares(user2.address);
-    console.log("balance1:",balance1.toString());
-    console.log("balance2:",balance2.toString());
-    console.log("share1:",share1.toString());
-    console.log("share2:",share2.toString());
-    const value2share = await stMTRG.valueToShare(balance1);
-    console.log("value2share:",value2share.toString());
-    const shareToValue = await stMTRG.shareToValue(share1);
-    console.log("shareToValue:",shareToValue.toString());
-
-    const totalShares = await stMTRG.totalShares();
-    console.log("totalShares:",totalShares.toString());
-    const totalSupply = await stMTRG.totalSupply();
-    console.log("totalSupply:",totalSupply.toString());
 
     await stMTRG.connect(user1).transfer(user2.address, balance1);
     expect(await stMTRG.balanceOf(user2.address)).equal(balance1.add(balance2));
   });
 
-  // it("user2 withdraw", async function() {
-  //   const mtrgBalanceBefore = await mtrg.balanceOf(user2.address);
-  //   const stMTRGbalance = await stMTRG.balanceOf(user2.address);
-  //   console.log(mtrgBalanceBefore);
-  //   await stMTRG.connect(user2).withdraw(stMTRGbalance, user2.address);
-  //   expect(await mtrg.balanceOf(user2.address)).equal(
-  //     mtrgBalanceBefore.add(parseUnits("430"))
-  //   );
-  // });
+  it("user2 withdraw", async function() {
+    const mtrgBalanceBefore = await mtrg.balanceOf(user2.address);
+    let stMTRGbalance = await stMTRG.balanceOf(user2.address);
+    await stMTRG.connect(user2).withdraw(stMTRGbalance, user2.address);
+    expect(await mtrg.balanceOf(user2.address)).equal(
+      mtrgBalanceBefore.add(stMTRGbalance)
+    );
+  });
+
+  it("transferFund", async function() {
+    await stMTRG.transferFund(user4.address);
+    let allBuckets = await stMTRG.allBuckets();
+    expect(allBuckets[4].totalDeposit).equal(parseUnits("160"));
+    await stMTRG.transferFund(user5.address);
+    allBuckets = await stMTRG.allBuckets();
+    expect(allBuckets[0].totalDeposit).equal(parseUnits("160"));
+    await stMTRG.transferFund(user1.address);
+    allBuckets = await stMTRG.allBuckets();
+    expect(allBuckets[1].totalDeposit).equal(parseUnits("160"));
+  });
+  it("deleteBucket", async function() {
+    const candidates = await stMTRG.candidates();
+    await stMTRG.deleteBucket(user1.address);
+    expect((await stMTRG.candidates()).length).equal(candidates.length - 1);
+    await stMTRG.deleteBucket(user2.address);
+    await stMTRG.deleteBucket(user3.address);
+    await stMTRG.deleteBucket(user4.address);
+  });
+
+  it("deleteBucket", async function() {
+    await expect(stMTRG.deleteBucket(user5.address)).to.be.revertedWith(
+      "only 1 candidate"
+    );
+  });
+
+  it("requestClose", async function() {
+    await stMTRG.requestClose();
+    expect(await stMTRG.isClose()).equal(true);
+  });
+
+  it("is close!", async function() {
+    await mtrg.connect(user2).approve(stMTRG.address, depositAmount);
+    await expect(
+      stMTRG.connect(user2).deposit(depositAmount)
+    ).to.be.revertedWith("is close!");
+    await expect(stMTRG.rebase()).to.be.revertedWith("is close!");
+  });
+
+  it("user3 withdraw", async function() {
+    const mtrgBalanceBefore = await mtrg.balanceOf(user3.address);
+    let stMTRGbalance = await stMTRG.balanceOf(user3.address);
+    await stMTRG.connect(user3).withdraw(stMTRGbalance, user3.address);
+    expect(await mtrg.balanceOf(user3.address)).equal(
+      mtrgBalanceBefore.add(stMTRGbalance)
+    );
+  });
+  it("executeClose", async function() {
+    await expect(stMTRG.executeClose()).to.be.revertedWith("CLOSE_DURATION!");
+  });
+  it("CLOSE_DURATION", async function() {
+    const CLOSE_DURATION = await stMTRG.CLOSE_DURATION();
+    await ethers.provider.send("evm_increaseTime", [CLOSE_DURATION.toNumber()]);
+  });
+  it("executeClose", async function() {
+    await stMTRG.executeClose();
+    expect(await stMTRG.inTerminal()).equal(true);
+  });
+  it("closeTerminal", async function() {
+    await stMTRG.closeTerminal();
+    expect(await stMTRG.inTerminal()).equal(false);
+  });
+  it("withdraw", async function() {
+    const mtrgBalanceBefore = await mtrg.balanceOf(deployer.address);
+    console.log("mtrgBalanceBefore:", mtrgBalanceBefore);
+    let stMTRGbalance = await stMTRG.balanceOf(deployer.address);
+    console.log("stMTRGbalance:", stMTRGbalance);
+    await stMTRG.withdrawAll(deployer.address);
+    console.log("after:", await mtrg.balanceOf(deployer.address));
+    console.log("stMTRG:", await mtrg.balanceOf(stMTRG.address));
+    expect(await mtrg.balanceOf(deployer.address)).equal(
+      mtrgBalanceBefore.add(stMTRGbalance)
+    );
+  });
 });

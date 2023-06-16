@@ -8,9 +8,10 @@ interface IScriptEngine {
      * this func create a bucket from msg.sender, voted to candidate
      * will revert if any error happens
      */
-    function bucketOpen(address candidate, uint256 amount)
-        external
-        returns (bytes32 bktID);
+    function bucketOpen(
+        address candidate,
+        uint256 amount
+    ) external returns (bytes32 bktID);
 
     /**
      * this func adds more value to the designated bucket owned by msg.sender
@@ -36,8 +37,24 @@ interface IScriptEngine {
      */
     function bucketClose(bytes32 bucketID) external;
 
-    function bucketUpdateCandidate(bytes32 bucketID, address newCandidateAddr)
-        external;
+    function bucketUpdateCandidate(
+        bytes32 bucketID,
+        address newCandidateAddr
+    ) external;
 
     function boundedMTRG() external view returns (uint256);
+
+    function bucketTransferFund(
+        bytes32 fromBucketID,
+        bytes32 toBucketID,
+        uint256 amount
+    ) external;
+
+    function bucketMerge(
+        bytes32 fromBucketID,
+        bytes32 toBucketID,
+        uint256 amount
+    ) external;
+
+    function bucketValue(bytes32 bucketID) external view returns (uint256);
 }

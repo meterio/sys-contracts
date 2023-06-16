@@ -35,7 +35,7 @@ export default {
     apiKey: process.env.ETHERSCAN_APIKEY,
   },
   solidity: {
-    compilers: [compileSetting("0.8.11", 200)],
+    compilers: [compileSetting("0.8.11", 800)],
   },
   mocha: {
     timeout: 200000,

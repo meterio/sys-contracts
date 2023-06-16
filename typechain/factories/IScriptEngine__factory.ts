@@ -64,6 +64,29 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "bytes32",
+        name: "fromBucketID",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32",
+        name: "toBucketID",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "bucketMerge",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "candidate",
         type: "address",
@@ -89,6 +112,29 @@ const _abi = [
     inputs: [
       {
         internalType: "bytes32",
+        name: "fromBucketID",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32",
+        name: "toBucketID",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "bucketTransferFund",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
         name: "bucketID",
         type: "bytes32",
       },
@@ -101,6 +147,25 @@ const _abi = [
     name: "bucketUpdateCandidate",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "bucketID",
+        type: "bytes32",
+      },
+    ],
+    name: "bucketValue",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {

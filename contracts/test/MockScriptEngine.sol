@@ -22,10 +22,10 @@ contract MockScriptEngine {
      * this func create a bucket from msg.sender, voted to candidate
      * will revert if any error happens
      */
-    function bucketOpen(address candidate, uint256 amount)
-        public
-        returns (bytes32 bucketID)
-    {
+    function bucketOpen(
+        address candidate,
+        uint256 amount
+    ) public returns (bytes32 bucketID) {
         bucketID = keccak256(abi.encode(msg.sender, candidate));
         require(
             bucket[msg.sender][bucketID] == 0 &&
@@ -34,8 +34,8 @@ contract MockScriptEngine {
         );
         MTRG.move(msg.sender, address(this), amount);
         bucketUser[bucketID] = msg.sender;
-        bucket[msg.sender][bucketID] = amount;
-        balance[msg.sender] = amount;
+        bucket[msg.sender][bucketID] += amount;
+        balance[msg.sender] += amount;
         buckets.add(bucketID);
     }
 
@@ -98,5 +98,41 @@ contract MockScriptEngine {
             uint256 amount = bucket[bucketAccount][bucketID] / 10;
             MTRG.mint(bucketAccount, amount);
         }
+    }
+
+    /**
+     * this func transfer fund from the designated `fromBucket` to `toBucket` owned by msg.sender
+     * will revert if any error happens
+     */
+    function bucketTransferFund(
+        bytes32 fromBucketID,
+        bytes32 toBucketID,
+        uint256 amount
+    ) public {
+        require(bucket[msg.sender][fromBucketID] > 100 ether, "100 ether");
+        bucket[msg.sender][fromBucketID] -= amount;
+        bucket[msg.sender][toBucketID] += amount;
+    }
+
+    /**
+     * this func transfer all funds from the designated `fromBucket` to `toBucket` owned by msg.sender, and immediately
+     * remove `fromBucket` from listing
+     * will revert if any error happens
+     */
+    function bucketMerge(
+        bytes32 fromBucketID,
+        bytes32 toBucketID,
+        uint256 amount
+    ) public {
+        bucket[msg.sender][fromBucketID] -= amount;
+        require(bucket[msg.sender][fromBucketID] == 0, ">0");
+        bucket[msg.sender][toBucketID] += amount;
+    }
+
+    /**
+     * this func returns the value of the designated bucket
+     */
+    function bucketValue(bytes32 bucketID) public view returns (uint256) {
+        return bucket[msg.sender][bucketID];
     }
 }

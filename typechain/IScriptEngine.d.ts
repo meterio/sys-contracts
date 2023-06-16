@@ -25,8 +25,11 @@ interface IScriptEngineInterface extends ethers.utils.Interface {
     "boundedMTRG()": FunctionFragment;
     "bucketClose(bytes32)": FunctionFragment;
     "bucketDeposit(bytes32,uint256)": FunctionFragment;
+    "bucketMerge(bytes32,bytes32,uint256)": FunctionFragment;
     "bucketOpen(address,uint256)": FunctionFragment;
+    "bucketTransferFund(bytes32,bytes32,uint256)": FunctionFragment;
     "bucketUpdateCandidate(bytes32,address)": FunctionFragment;
+    "bucketValue(bytes32)": FunctionFragment;
     "bucketWithdraw(bytes32,uint256,address)": FunctionFragment;
   };
 
@@ -43,12 +46,24 @@ interface IScriptEngineInterface extends ethers.utils.Interface {
     values: [BytesLike, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "bucketMerge",
+    values: [BytesLike, BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "bucketOpen",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "bucketTransferFund",
+    values: [BytesLike, BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "bucketUpdateCandidate",
     values: [BytesLike, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "bucketValue",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "bucketWithdraw",
@@ -67,9 +82,21 @@ interface IScriptEngineInterface extends ethers.utils.Interface {
     functionFragment: "bucketDeposit",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "bucketMerge",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "bucketOpen", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "bucketTransferFund",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "bucketUpdateCandidate",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "bucketValue",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -124,6 +151,20 @@ export class IScriptEngine extends Contract {
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
+    bucketMerge(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "bucketMerge(bytes32,bytes32,uint256)"(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
     bucketOpen(
       candidate: string,
       amount: BigNumberish,
@@ -132,6 +173,20 @@ export class IScriptEngine extends Contract {
 
     "bucketOpen(address,uint256)"(
       candidate: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    bucketTransferFund(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "bucketTransferFund(bytes32,bytes32,uint256)"(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
       amount: BigNumberish,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
@@ -147,6 +202,20 @@ export class IScriptEngine extends Contract {
       newCandidateAddr: string,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
+
+    bucketValue(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
+
+    "bucketValue(bytes32)"(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: BigNumber;
+    }>;
 
     bucketWithdraw(
       bucketID: BytesLike,
@@ -189,6 +258,20 @@ export class IScriptEngine extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
+  bucketMerge(
+    fromBucketID: BytesLike,
+    toBucketID: BytesLike,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "bucketMerge(bytes32,bytes32,uint256)"(
+    fromBucketID: BytesLike,
+    toBucketID: BytesLike,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
   bucketOpen(
     candidate: string,
     amount: BigNumberish,
@@ -197,6 +280,20 @@ export class IScriptEngine extends Contract {
 
   "bucketOpen(address,uint256)"(
     candidate: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  bucketTransferFund(
+    fromBucketID: BytesLike,
+    toBucketID: BytesLike,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "bucketTransferFund(bytes32,bytes32,uint256)"(
+    fromBucketID: BytesLike,
+    toBucketID: BytesLike,
     amount: BigNumberish,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
@@ -212,6 +309,16 @@ export class IScriptEngine extends Contract {
     newCandidateAddr: string,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
+
+  bucketValue(
+    bucketID: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  "bucketValue(bytes32)"(
+    bucketID: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
 
   bucketWithdraw(
     bucketID: BytesLike,
@@ -251,6 +358,20 @@ export class IScriptEngine extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    bucketMerge(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "bucketMerge(bytes32,bytes32,uint256)"(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     bucketOpen(
       candidate: string,
       amount: BigNumberish,
@@ -263,6 +384,20 @@ export class IScriptEngine extends Contract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    bucketTransferFund(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "bucketTransferFund(bytes32,bytes32,uint256)"(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     bucketUpdateCandidate(
       bucketID: BytesLike,
       newCandidateAddr: string,
@@ -274,6 +409,16 @@ export class IScriptEngine extends Contract {
       newCandidateAddr: string,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    bucketValue(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "bucketValue(bytes32)"(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     bucketWithdraw(
       bucketID: BytesLike,
@@ -316,6 +461,20 @@ export class IScriptEngine extends Contract {
       overrides?: Overrides
     ): Promise<BigNumber>;
 
+    bucketMerge(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "bucketMerge(bytes32,bytes32,uint256)"(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
     bucketOpen(
       candidate: string,
       amount: BigNumberish,
@@ -324,6 +483,20 @@ export class IScriptEngine extends Contract {
 
     "bucketOpen(address,uint256)"(
       candidate: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    bucketTransferFund(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "bucketTransferFund(bytes32,bytes32,uint256)"(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
       amount: BigNumberish,
       overrides?: Overrides
     ): Promise<BigNumber>;
@@ -338,6 +511,16 @@ export class IScriptEngine extends Contract {
       bucketID: BytesLike,
       newCandidateAddr: string,
       overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    bucketValue(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "bucketValue(bytes32)"(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     bucketWithdraw(
@@ -382,6 +565,20 @@ export class IScriptEngine extends Contract {
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
+    bucketMerge(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "bucketMerge(bytes32,bytes32,uint256)"(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
     bucketOpen(
       candidate: string,
       amount: BigNumberish,
@@ -390,6 +587,20 @@ export class IScriptEngine extends Contract {
 
     "bucketOpen(address,uint256)"(
       candidate: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    bucketTransferFund(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "bucketTransferFund(bytes32,bytes32,uint256)"(
+      fromBucketID: BytesLike,
+      toBucketID: BytesLike,
       amount: BigNumberish,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
@@ -404,6 +615,16 @@ export class IScriptEngine extends Contract {
       bucketID: BytesLike,
       newCandidateAddr: string,
       overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    bucketValue(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "bucketValue(bytes32)"(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     bucketWithdraw(
