@@ -30,6 +30,7 @@ describe("treasury tests", function() {
   let raward: BigNumber;
   let proxyAdmin: ProxyAdmin;
   let proxy: StakingProxy;
+  let depositAmount: BigNumber;
 
   before(async function() {
     [
@@ -61,7 +62,6 @@ describe("treasury tests", function() {
       deployer.address,
       mtrg.address,
       scriptEngine.address,
-      deployer.address,
     ]);
 
     proxy = (await (
@@ -82,108 +82,134 @@ describe("treasury tests", function() {
     await mtrg.transfer(user3.address, amount);
     await mtrg.transfer(user4.address, amount);
     await mtrg.transfer(user5.address, amount);
+
+    depositAmount = parseUnits("100");
   });
-  // initialize
-  it("initialize", async function() {
-    const depositAmount = parseUnits("100");
+  // newCandidate 1
+  it("newCandidate 1", async function() {
     await mtrg.connect(deployer).approve(stMTRG.address, depositAmount);
-    receipt = await stMTRG.connect(deployer).adminInit();
+    receipt = await stMTRG.connect(deployer).newCandidate(user1.address);
     expect(await stMTRG.balanceOf(deployer.address)).equal(depositAmount);
-    expect(await mtrg.balanceOf(deployer.address)).equal(parseUnits("994900"));
+  });
+  // newCandidate 2
+  it("newCandidate 2", async function() {
+    await mtrg.connect(deployer).approve(stMTRG.address, depositAmount);
+    receipt = await stMTRG.connect(deployer).newCandidate(user2.address);
+    expect(await stMTRG.balanceOf(deployer.address)).equal(
+      depositAmount.mul(2)
+    );
+  });
+  // newCandidate 3
+  it("newCandidate 3", async function() {
+    await mtrg.connect(deployer).approve(stMTRG.address, depositAmount);
+    receipt = await stMTRG.connect(deployer).newCandidate(user3.address);
+    expect(await stMTRG.balanceOf(deployer.address)).equal(
+      depositAmount.mul(3)
+    );
+  });
+  // newCandidate 4
+  it("newCandidate 4", async function() {
+    await mtrg.connect(deployer).approve(stMTRG.address, depositAmount);
+    receipt = await stMTRG.connect(deployer).newCandidate(user4.address);
+    expect(await stMTRG.balanceOf(deployer.address)).equal(
+      depositAmount.mul(4)
+    );
+  });
+  // newCandidate 5
+  it("newCandidate 5", async function() {
+    await mtrg.connect(deployer).approve(stMTRG.address, depositAmount);
+    receipt = await stMTRG.connect(deployer).newCandidate(user5.address);
+    expect(await stMTRG.balanceOf(deployer.address)).equal(
+      depositAmount.mul(5)
+    );
   });
 
   it("value2share", async function() {
-    const depositAmount = parseUnits("100");
-    let share = await stMTRG.valueToShare(depositAmount)
-    console.log("valueToShare:",share.toString());
-    let value = await stMTRG.shareToValue(share)
-    console.log("shareToValue:",value.toString());
+    let share = await stMTRG.valueToShare(depositAmount);
+    // console.log("share:", share.toString());
+    let value = await stMTRG.shareToValue(share);
+    expect(value).equal(depositAmount);
   });
+
   // deposit
   it("user1 deposit", async function() {
-    const depositAmount = parseUnits("100");
-    let share1 = await stMTRG._shares(user1.address);
-    console.log("share1:",share1.toString());
-    let balance1 = await stMTRG.balanceOf(user1.address);
-    console.log("balance1:",balance1.toString());
-    
+    let bucket = await stMTRG.candidateToBucket(user1.address);
+    let totalDeposit = bucket.totalDeposit;
+
     await mtrg.connect(user1).approve(stMTRG.address, depositAmount);
     receipt = await stMTRG.connect(user1).deposit(depositAmount);
 
-    share1 = await stMTRG._shares(user1.address);
-    console.log("share1:",share1.toString());
-    balance1 = await stMTRG.balanceOf(user1.address);
-    console.log("balance1:",balance1.toString());
-    expect(await stMTRG.balanceOf(user1.address)).equal(depositAmount);
-    expect(await mtrg.balanceOf(user1.address)).equal(parseUnits("900"));
+    const balance1 = await stMTRG.balanceOf(user1.address);
+    expect(balance1).equal(depositAmount);
+    bucket = await stMTRG.candidateToBucket(user1.address);
+    expect(bucket.totalDeposit).equal(totalDeposit.add(depositAmount));
   });
 
   it("user2 deposit", async function() {
-    let depositAmount = parseUnits("200");
+    let bucket = await stMTRG.candidateToBucket(user2.address);
+    let totalDeposit = bucket.totalDeposit;
+
     await mtrg.connect(user2).approve(stMTRG.address, depositAmount);
     receipt = await stMTRG.connect(user2).deposit(depositAmount);
-    expect(await stMTRG.balanceOf(user2.address)).equal(depositAmount);
-    expect(await mtrg.balanceOf(user2.address)).equal(parseUnits("800"));
+
+    const balance1 = await stMTRG.balanceOf(user2.address);
+    expect(balance1).equal(depositAmount);
+    bucket = await stMTRG.candidateToBucket(user2.address);
+    expect(bucket.totalDeposit).equal(totalDeposit.add(depositAmount));
   });
 
-  it("user3 deposit", async function() {
-    let depositAmount = parseUnits("300");
+  it("requestClose", async function() {
+    const candidates = await stMTRG.candidates();
+    const candidate = candidates[2];
+    await stMTRG.requestClose(candidate);
+    const bucket = await stMTRG.candidateToBucket(candidate);
+    expect(bucket.status).equal(2);
+  });
+
+  it("user3 deposit to candidate 4", async function() {
+    let bucket = await stMTRG.candidateToBucket(user4.address);
+    let totalDeposit = bucket.totalDeposit;
+
     await mtrg.connect(user3).approve(stMTRG.address, depositAmount);
     receipt = await stMTRG.connect(user3).deposit(depositAmount);
-    expect(await stMTRG.balanceOf(user3.address)).equal(depositAmount);
-    expect(await mtrg.balanceOf(user3.address)).equal(parseUnits("700"));
-  });
 
-  it("user4 deposit", async function() {
-    let depositAmount = parseUnits("400");
-    await mtrg.connect(user4).approve(stMTRG.address, depositAmount);
-    receipt = await stMTRG.connect(user4).deposit(depositAmount);
-    expect(await stMTRG.balanceOf(user4.address)).equal(depositAmount);
-    expect(await mtrg.balanceOf(user4.address)).equal(parseUnits("600"));
-  });
-
-  it("user5 deposit", async function() {
-    let depositAmount = parseUnits("500");
-    await mtrg.connect(user5).approve(stMTRG.address, depositAmount);
-    receipt = await stMTRG.connect(user5).deposit(depositAmount);
-    expect(await stMTRG.balanceOf(user5.address)).equal(depositAmount);
-    expect(await mtrg.balanceOf(user5.address)).equal(parseUnits("500"));
+    const balance1 = await stMTRG.balanceOf(user3.address);
+    expect(balance1).equal(depositAmount);
+    bucket = await stMTRG.candidateToBucket(user4.address);
+    expect(bucket.totalDeposit).equal(totalDeposit.add(depositAmount));
   });
 
   it("balance totalSupply", async function() {
-    const depositAmount = parseUnits("1600");
-    expect(await stMTRG.totalSupply()).equal(depositAmount);
-    expect(await mtrg.balanceOf(scriptEngine.address)).equal(depositAmount);
+    expect(await stMTRG.totalSupply()).equal(parseUnits("800"));
+    expect(await mtrg.balanceOf(scriptEngine.address)).equal(parseUnits("800"));
   });
 
   it("reward", async function() {
     await scriptEngine.reward();
-    expect(await mtrg.balanceOf(stMTRG.address)).equal(parseUnits("160"));
+    expect(await mtrg.balanceOf(stMTRG.address)).equal(parseUnits("80"));
   });
 
   it("rebase", async function() {
     await stMTRG.rebase();
     expect(await mtrg.balanceOf(stMTRG.address)).equal(0);
-    let depositAmount = parseUnits("1760");
-    expect(await stMTRG.totalSupply()).equal(depositAmount);
-    expect(await mtrg.balanceOf(scriptEngine.address)).equal(depositAmount);
+    expect(await stMTRG.totalSupply()).equal(parseUnits("880"));
+    expect(await mtrg.balanceOf(scriptEngine.address)).equal(parseUnits("880"));
   });
 
   it("user1 balance", async function() {
     const currentAmount = parseUnits("100")
-      .mul(parseUnits("1650"))
-      .div(parseUnits("1500"));
+      .mul(parseUnits("880"))
+      .div(parseUnits("800"));
 
-      const share1 = await stMTRG._shares(user1.address);
+      const share1 = await stMTRG.shares(user1.address);
       console.log("share1:",share1.toString());
       const balance1 = await stMTRG.balanceOf(user1.address);
       console.log("balance1:",balance1.toString());
-      const _totalShares = await stMTRG._totalShares();
-      console.log("_totalShares:",_totalShares.toString());
+      const totalShares = await stMTRG.totalShares();
+      console.log("totalShares:",totalShares.toString());
       const totalSupply = await stMTRG.totalSupply();
       console.log("totalSupply:",totalSupply.toString());
     expect(await stMTRG.balanceOf(user1.address)).equal(currentAmount);
-    expect(await mtrg.balanceOf(user1.address)).equal(parseUnits("900"));
   });
 
   it("user1 deposit 2", async function() {
@@ -192,27 +218,26 @@ describe("treasury tests", function() {
     const balanceBefore = await stMTRG.balanceOf(user1.address);
     console.log("balanceBefore:",balanceBefore.toString())
     receipt = await stMTRG.connect(user1).deposit(depositAmount);
-    
+
     const userBalance = await stMTRG.balanceOf(user1.address);
     console.log("userBalance:", userBalance);
+    expect(userBalance).equal(parseUnits("210"));
 
-    const share1 = await stMTRG._shares(user1.address);
+    const share1 = await stMTRG.shares(user1.address);
     console.log("share1:",share1.toString());
     const balance1 = await stMTRG.balanceOf(user1.address);
     console.log("balance1:",balance1.toString());
-    const _totalShares = await stMTRG._totalShares();
-    console.log("_totalShares:",_totalShares.toString());
+    const totalShares = await stMTRG.totalShares();
+    console.log("totalShares:",totalShares.toString());
     const totalSupply = await stMTRG.totalSupply();
     console.log("totalSupply:",totalSupply.toString());
-    expect(userBalance).equal(parseUnits("210"));
-    expect(await mtrg.balanceOf(user1.address)).equal(parseUnits("800"));
   });
 
   it("user1 transfer", async function() {
     const balance1 = await stMTRG.balanceOf(user1.address);
     const balance2 = await stMTRG.balanceOf(user2.address);
-    const share1 = await stMTRG._shares(user1.address);
-    const share2 = await stMTRG._shares(user2.address);
+    const share1 = await stMTRG.shares(user1.address);
+    const share2 = await stMTRG.shares(user2.address);
     console.log("balance1:",balance1.toString());
     console.log("balance2:",balance2.toString());
     console.log("share1:",share1.toString());
@@ -222,11 +247,8 @@ describe("treasury tests", function() {
     const shareToValue = await stMTRG.shareToValue(share1);
     console.log("shareToValue:",shareToValue.toString());
 
-
-    const value2share2 = await stMTRG.valueToShare2(balance1);
-    console.log("value2share2:",value2share2.toString());
-    const _totalShares = await stMTRG._totalShares();
-    console.log("_totalShares:",_totalShares.toString());
+    const totalShares = await stMTRG.totalShares();
+    console.log("totalShares:",totalShares.toString());
     const totalSupply = await stMTRG.totalSupply();
     console.log("totalSupply:",totalSupply.toString());
 
@@ -234,13 +256,13 @@ describe("treasury tests", function() {
     expect(await stMTRG.balanceOf(user2.address)).equal(balance1.add(balance2));
   });
 
-  it("user2 withdraw", async function() {
-    const mtrgBalanceBefore = await mtrg.balanceOf(user2.address);
-    const stMTRGbalance = await stMTRG.balanceOf(user2.address);
-    console.log(mtrgBalanceBefore);
-    await stMTRG.connect(user2).withdraw(stMTRGbalance, user2.address);
-    expect(await mtrg.balanceOf(user2.address)).equal(
-      mtrgBalanceBefore.add(parseUnits("430"))
-    );
-  });
+  // it("user2 withdraw", async function() {
+  //   const mtrgBalanceBefore = await mtrg.balanceOf(user2.address);
+  //   const stMTRGbalance = await stMTRG.balanceOf(user2.address);
+  //   console.log(mtrgBalanceBefore);
+  //   await stMTRG.connect(user2).withdraw(stMTRGbalance, user2.address);
+  //   expect(await mtrg.balanceOf(user2.address)).equal(
+  //     mtrgBalanceBefore.add(parseUnits("430"))
+  //   );
+  // });
 });

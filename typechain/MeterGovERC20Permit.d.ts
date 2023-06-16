@@ -35,7 +35,6 @@ interface MeterGovERC20PermitInterface extends ethers.utils.Interface {
     "balanceOf(address)": FunctionFragment;
     "balanceOfBoundMtrg(address)": FunctionFragment;
     "decimals()": FunctionFragment;
-    "move(address,address,uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "nonces(address)": FunctionFragment;
     "permit(address,address,uint256,uint256,bytes)": FunctionFragment;
@@ -92,10 +91,6 @@ interface MeterGovERC20PermitInterface extends ethers.utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "move",
-    values: [string, string, BigNumberish]
-  ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(functionFragment: "nonces", values: [string]): string;
   encodeFunctionData(
@@ -157,7 +152,6 @@ interface MeterGovERC20PermitInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "move", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "nonces", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "permit", data: BytesLike): Result;
@@ -333,20 +327,6 @@ export class MeterGovERC20Permit extends Contract {
       0: number;
     }>;
 
-    move(
-      _from: string,
-      _to: string,
-      _amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "move(address,address,uint256)"(
-      _from: string,
-      _to: string,
-      _amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
     name(overrides?: CallOverrides): Promise<{
       0: string;
     }>;
@@ -515,20 +495,6 @@ export class MeterGovERC20Permit extends Contract {
 
   "decimals()"(overrides?: CallOverrides): Promise<number>;
 
-  move(
-    _from: string,
-    _to: string,
-    _amount: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "move(address,address,uint256)"(
-    _from: string,
-    _to: string,
-    _amount: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
   name(overrides?: CallOverrides): Promise<string>;
 
   "name()"(overrides?: CallOverrides): Promise<string>;
@@ -673,20 +639,6 @@ export class MeterGovERC20Permit extends Contract {
     decimals(overrides?: CallOverrides): Promise<number>;
 
     "decimals()"(overrides?: CallOverrides): Promise<number>;
-
-    move(
-      _from: string,
-      _to: string,
-      _amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    "move(address,address,uint256)"(
-      _from: string,
-      _to: string,
-      _amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
 
     name(overrides?: CallOverrides): Promise<string>;
 
@@ -847,20 +799,6 @@ export class MeterGovERC20Permit extends Contract {
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
 
     "decimals()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    move(
-      _from: string,
-      _to: string,
-      _amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "move(address,address,uint256)"(
-      _from: string,
-      _to: string,
-      _amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1024,20 +962,6 @@ export class MeterGovERC20Permit extends Contract {
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "decimals()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    move(
-      _from: string,
-      _to: string,
-      _amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "move(address,address,uint256)"(
-      _from: string,
-      _to: string,
-      _amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
