@@ -416,13 +416,13 @@ export class MockScriptEngine extends Contract {
       bucketID: BytesLike,
       amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
 
     "bucketDeposit(bytes32,uint256)"(
       bucketID: BytesLike,
       amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
 
     bucketMerge(
       fromBucketID: BytesLike,

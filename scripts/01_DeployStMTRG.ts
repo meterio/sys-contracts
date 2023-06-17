@@ -24,7 +24,6 @@ async function main() {
     signer.address,
     MTRG.address,
     ScriptEngine.address,
-    Candidates[candidatesIndex].address,
   ]);
   const proxy = await Deploy.deployContract(
     signer,

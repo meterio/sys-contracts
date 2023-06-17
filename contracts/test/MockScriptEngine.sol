@@ -43,11 +43,12 @@ contract MockScriptEngine {
      * this func adds more value to the designated bucket owned by msg.sender
      * will revert if any error happens
      */
-    function bucketDeposit(bytes32 bucketID, uint256 amount) public {
+    function bucketDeposit(bytes32 bucketID, uint256 amount) public returns(bool){
         require(bucket[msg.sender][bucketID] > 0, "bucket not exist!");
         MTRG.move(msg.sender, address(this), amount);
         bucket[msg.sender][bucketID] += amount;
         balance[msg.sender] += amount;
+        return true;
     }
 
     /**

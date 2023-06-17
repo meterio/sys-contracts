@@ -57,7 +57,13 @@ const _abi = [
       },
     ],
     name: "bucketDeposit",
-    outputs: [],
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
     stateMutability: "nonpayable",
     type: "function",
   },

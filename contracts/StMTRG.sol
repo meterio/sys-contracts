@@ -135,23 +135,17 @@ contract StMTRG is
     }
 
     function rebase() public onlyRole(DEFAULT_ADMIN_ROLE) notClose {
-        currentIndex = currentIndex >= _candidates.length ? 0 : currentIndex;
-        Bucket storage bucket = candidateToBucket[_candidates[currentIndex]];
-        bytes32 bucketID = bucket.bucketID;
-        if (bucketID == bytes32(0)) return;
         uint256 mtrgBalance = MTRG.balanceOf(address(this));
         if (mtrgBalance > 0) {
-            scriptEngine.bucketDeposit(bucketID, mtrgBalance);
+            bytes32 bucketID = _deposit(address(0), mtrgBalance);
+            epoch++;
+            emit LogRebase(
+                bucketID,
+                bucketIDToCandidate[bucketID],
+                epoch,
+                totalSupply()
+            );
         }
-        bucket.totalDeposit += mtrgBalance;
-        epoch++;
-        emit LogRebase(
-            bucketID,
-            bucketIDToCandidate[bucketID],
-            epoch,
-            totalSupply()
-        );
-        currentIndex += 1;
     }
 
     function updateCandidate(
@@ -277,20 +271,45 @@ contract StMTRG is
     }
 
     function deposit(uint256 amount) public whenNotPaused notClose {
-        currentIndex = currentIndex >= _candidates.length ? 0 : currentIndex;
-        Bucket storage bucket = candidateToBucket[_candidates[currentIndex]];
         require(_totalShares > 0, "totalShares = 0");
         address account = msg.sender;
-        MTRG.transferFrom(account, address(this), amount);
-        scriptEngine.bucketDeposit(bucket.bucketID, amount);
-
         uint256 shares_ = _valueToShare(amount);
+
         _shares[account] += shares_;
         _totalShares += shares_.wadToRay();
-        bucket.totalDeposit += amount;
+        MTRG.transferFrom(account, address(this), amount);
         emit Transfer(address(0x0), account, amount);
-        emit Deposit(account, bucket.bucketID, amount);
-        currentIndex += 1;
+
+        _deposit(account, amount);
+    }
+
+    function _deposit(
+        address account,
+        uint256 amount
+    ) private returns (bytes32 bucketID) {
+        bool success;
+        bytes memory data;
+        do {
+            currentIndex = currentIndex >= _candidates.length
+                ? 0
+                : currentIndex;
+            Bucket storage bucket = candidateToBucket[
+                _candidates[currentIndex]
+            ];
+            (success, data) = address(scriptEngine).call(
+                abi.encodeWithSelector(
+                    IScriptEngine.bucketDeposit.selector,
+                    bucket.bucketID,
+                    amount
+                )
+            );
+            currentIndex += 1;
+            if (success && abi.decode(data, (bool))) {
+                bucket.totalDeposit += amount;
+                emit Deposit(account, bucket.bucketID, amount);
+                bucketID = bucket.bucketID;
+            }
+        } while (!success);
     }
 
     function _withdraw(

@@ -17,7 +17,10 @@ interface IScriptEngine {
      * this func adds more value to the designated bucket owned by msg.sender
      * will revert if any error happens
      */
-    function bucketDeposit(bytes32 bucketID, uint256 amount) external;
+    function bucketDeposit(
+        bytes32 bucketID,
+        uint256 amount
+    ) external returns (bool);
 
     /**
      * this func withdraw value from the designated bucket owned by msg.sender, createsa sub bucket to `recipient`
