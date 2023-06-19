@@ -81,7 +81,13 @@ const _abi = [
       },
     ],
     name: "bucketMerge",
-    outputs: [],
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -128,7 +134,13 @@ const _abi = [
       },
     ],
     name: "bucketTransferFund",
-    outputs: [],
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
     stateMutability: "nonpayable",
     type: "function",
   },

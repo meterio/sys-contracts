@@ -51,9 +51,12 @@ interface IScriptEngine {
         bytes32 fromBucketID,
         bytes32 toBucketID,
         uint256 amount
-    ) external;
+    ) external returns (bool);
 
-    function bucketMerge(bytes32 fromBucketID, bytes32 toBucketID) external;
+    function bucketMerge(
+        bytes32 fromBucketID,
+        bytes32 toBucketID
+    ) external returns (uint256);
 
     function bucketValue(bytes32 bucketID) external view returns (uint256);
 }

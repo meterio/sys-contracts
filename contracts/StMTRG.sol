@@ -123,12 +123,12 @@ contract StMTRG is
         emit NewCandidate(candidate, bucketID);
 
         if (_totalShares == 0) {
-            _shares[account] += amount;
+            _shares[account] += amount.wadToRay();
             _totalShares += amount.wadToRay();
         } else {
             uint256 shares_ = _valueToShare(amount);
             _shares[account] += shares_;
-            _totalShares += shares_.wadToRay();
+            _totalShares += shares_;
         }
         emit Transfer(address(0x0), account, amount);
         emit Deposit(account, bucketID, amount);
@@ -170,25 +170,41 @@ contract StMTRG is
     function transferFund(
         address candidate
     ) public onlyRole(DEFAULT_ADMIN_ROLE) notClose {
+        require(_candidates.length > 1, "only 1 candidate");
         uint256 _candidateIndex = candidateIndex[candidate];
         Bucket storage bucket = candidateToBucket[
             _candidates[_candidateIndex - 1]
         ];
-        uint256 nextIndex = _candidateIndex >= _candidates.length
-            ? 0
-            : _candidateIndex;
-        Bucket storage nextBucket = candidateToBucket[_candidates[nextIndex]];
         uint256 amount = bucket.totalDeposit;
-        if (amount > 0) {
-            bucket.totalDeposit = 0;
-            nextBucket.totalDeposit += amount;
-            scriptEngine.bucketTransferFund(
-                bucket.bucketID,
-                nextBucket.bucketID,
-                amount
+        if (amount == 0) return;
+        bucket.totalDeposit = 0;
+        bool success;
+        bytes memory data;
+
+        for (uint256 i = 0; i < _candidates.length; ++i) {
+            _candidateIndex = _candidateIndex >= _candidates.length
+                ? 0
+                : _candidateIndex;
+            Bucket storage nextBucket = candidateToBucket[
+                _candidates[_candidateIndex]
+            ];
+
+            (success, data) = address(scriptEngine).call(
+                abi.encodeWithSelector(
+                    IScriptEngine.bucketTransferFund.selector,
+                    bucket.bucketID,
+                    nextBucket.bucketID,
+                    amount
+                )
             );
-            emit TransferFund(bucket.bucketID, nextBucket.bucketID, amount);
+            _candidateIndex++;
+            if (success && abi.decode(data, (bool))) {
+                nextBucket.totalDeposit += amount;
+                emit TransferFund(bucket.bucketID, nextBucket.bucketID, amount);
+                break;
+            }
         }
+        require(success && abi.decode(data, (bool)), "no dst candidate!");
     }
 
     function deleteBucket(
@@ -199,30 +215,48 @@ contract StMTRG is
         Bucket storage bucket = candidateToBucket[
             _candidates[_candidateIndex - 1]
         ];
-        uint256 nextIndex = _candidateIndex >= _candidates.length
-            ? 0
-            : _candidateIndex;
-        Bucket storage nextBucket = candidateToBucket[_candidates[nextIndex]];
         uint256 amount = bucket.totalDeposit + bucket.locked;
-        bucket.totalDeposit = 0;
-        bucket.locked = 0;
-        nextBucket.totalDeposit += amount;
-        scriptEngine.bucketMerge(bucket.bucketID, nextBucket.bucketID);
+        bytes32 bucketID = bucket.bucketID;
+        if (amount > 0) {
+            bool success;
+            bytes memory data;
 
-        delete bucketIDToCandidate[bucket.bucketID];
-        delete candidateToBucket[candidate];
-        if (candidateIndex[candidate] < _candidates.length) {
-            candidateIndex[
-                _candidates[_candidates.length - 1]
-            ] = candidateIndex[candidate];
-            _candidates[candidateIndex[candidate] - 1] = _candidates[
-                _candidates.length - 1
-            ];
+            delete bucketIDToCandidate[bucket.bucketID];
+            delete candidateToBucket[candidate];
+            if (candidateIndex[candidate] < _candidates.length) {
+                candidateIndex[
+                    _candidates[_candidates.length - 1]
+                ] = candidateIndex[candidate];
+                _candidates[candidateIndex[candidate] - 1] = _candidates[
+                    _candidates.length - 1
+                ];
+            }
+            _candidates.pop();
+            delete candidateIndex[candidate];
+
+            for (uint256 i = 0; i < _candidates.length; ++i) {
+                _candidateIndex = _candidateIndex >= _candidates.length
+                    ? 0
+                    : _candidateIndex;
+                Bucket storage nextBucket = candidateToBucket[
+                    _candidates[_candidateIndex]
+                ];
+                (success, data) = address(scriptEngine).call(
+                    abi.encodeWithSelector(
+                        IScriptEngine.bucketMerge.selector,
+                        bucketID,
+                        nextBucket.bucketID
+                    )
+                );
+                _candidateIndex++;
+                if (success && abi.decode(data, (bool))) {
+                    nextBucket.totalDeposit += amount;
+                    emit Merge(bucket.bucketID, nextBucket.bucketID, amount);
+                    break;
+                }
+            }
+            require(success && abi.decode(data, (bool)), "no dst candidate!");
         }
-        _candidates.pop();
-        delete candidateIndex[candidate];
-
-        emit Merge(bucket.bucketID, nextBucket.bucketID, amount);
     }
 
     function setBlackList(address account) public onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -276,7 +310,7 @@ contract StMTRG is
         uint256 shares_ = _valueToShare(amount);
 
         _shares[account] += shares_;
-        _totalShares += shares_.wadToRay();
+        _totalShares += shares_;
         MTRG.transferFrom(account, address(this), amount);
         emit Transfer(address(0x0), account, amount);
 
@@ -289,7 +323,7 @@ contract StMTRG is
     ) private returns (bytes32 bucketID) {
         bool success;
         bytes memory data;
-        do {
+        for (uint256 i = 0; i < _candidates.length; ++i) {
             currentIndex = currentIndex >= _candidates.length
                 ? 0
                 : currentIndex;
@@ -308,8 +342,10 @@ contract StMTRG is
                 bucket.totalDeposit += amount;
                 emit Deposit(account, bucket.bucketID, amount);
                 bucketID = bucket.bucketID;
+                break;
             }
-        } while (!success);
+        }
+        require(success && abi.decode(data, (bool)), "no dst candidate!");
     }
 
     function _withdraw(
@@ -320,17 +356,19 @@ contract StMTRG is
         uint256 burnShares = _valueToShare(amount);
         uint256 accountShares = _shares[account];
         require(
-            accountShares >= burnShares,
+            accountShares >= burnShares || burnShares - accountShares < 1e10,
             "ERC20: burn amount exceeds balance"
         );
         require(!_blackList[account], "account is in black list");
         unchecked {
-            _shares[account] = accountShares - burnShares;
-            _totalShares -= burnShares.wadToRay();
+            _shares[account] = accountShares.raySub(burnShares);
+            _totalShares = _totalShares.raySub(burnShares);
         }
         emit Transfer(account, address(0), amount);
-        currentIndex = currentIndex >= _candidates.length ? 0 : currentIndex;
         for (uint256 i; i < _candidates.length; ++i) {
+            currentIndex = currentIndex >= _candidates.length
+                ? 0
+                : currentIndex;
             Bucket storage bucket = candidateToBucket[
                 _candidates[currentIndex]
             ];
@@ -414,7 +452,7 @@ contract StMTRG is
             _totalSupply += bucket.totalDeposit;
             _totalSupply += bucket.locked;
         }
-        return (_share.rayMul(_totalSupply)).rayDiv(_totalShares).wadToRay();
+        return (_share.rayMul(_totalSupply)).rayDiv(_totalShares);
     }
 
     function valueToShare(uint256 _value) public view returns (uint256) {
@@ -428,7 +466,7 @@ contract StMTRG is
             _totalSupply += bucket.totalDeposit;
             _totalSupply += bucket.locked;
         }
-        return _value.rayMul(_totalShares).rayDiv(_totalSupply).rayToWad();
+        return _value.rayMul(_totalShares).rayDiv(_totalSupply);
     }
 
     function _transfer(
@@ -448,11 +486,11 @@ contract StMTRG is
         uint256 shares_ = _valueToShare(_value);
         uint256 fromShares = _shares[_from];
         require(
-            fromShares >= shares_,
+            fromShares >= shares_ || shares_ - fromShares < 1e10,
             "ERC20: transfer amount exceeds balance"
         );
         unchecked {
-            _shares[_from] = fromShares - shares_;
+            _shares[_from] = fromShares.raySub(shares_);
             _shares[_to] += shares_;
         }
 

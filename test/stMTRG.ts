@@ -168,6 +168,21 @@ describe("treasury tests", function() {
     expect(bucket.totalDeposit).equal(totalDeposit.add(depositAmount));
   });
 
+  it("user4 deposit", async function() {
+    let bucket = await stMTRG.candidateToBucket(user4.address);
+    await scriptEngine.setBucketRevert(bucket.bucketID);
+    await mtrg.connect(user4).approve(stMTRG.address, depositAmount);
+    receipt = await stMTRG.connect(user4).deposit(depositAmount);
+    let bucket4 = await stMTRG.candidateToBucket(user4.address);
+    expect(bucket4.totalDeposit).equal(0);
+    let bucket5 = await stMTRG.candidateToBucket(user5.address);
+    expect(bucket5.totalDeposit).equal(depositAmount);
+    receipt = await stMTRG
+      .connect(user4)
+      .withdraw(depositAmount, user4.address);
+    await scriptEngine.setBucketRevert(bucket.bucketID);
+  });
+
   it("balance totalSupply", async function() {
     expect(await stMTRG.totalSupply()).equal(parseUnits("800"));
     expect(await mtrg.balanceOf(scriptEngine.address)).equal(parseUnits("800"));
@@ -202,7 +217,6 @@ describe("treasury tests", function() {
   it("user1 transfer", async function() {
     const balance1 = await stMTRG.balanceOf(user1.address);
     const balance2 = await stMTRG.balanceOf(user2.address);
-
     await stMTRG.connect(user1).transfer(user2.address, balance1);
     expect(await stMTRG.balanceOf(user2.address)).equal(balance1.add(balance2));
   });
@@ -217,23 +231,87 @@ describe("treasury tests", function() {
   });
 
   it("transferFund", async function() {
-    await stMTRG.transferFund(user4.address);
+    await stMTRG.transferFund(user2.address);
     let allBuckets = await stMTRG.allBuckets();
-    expect(allBuckets[4].totalDeposit).equal(parseUnits("160"));
-    await stMTRG.transferFund(user5.address);
+    expect(allBuckets[1].totalDeposit).equal(0);
+    expect(allBuckets[2].totalDeposit).equal(parseUnits("160"));
+    await stMTRG.transferFund(user3.address);
     allBuckets = await stMTRG.allBuckets();
+    expect(allBuckets[2].totalDeposit).equal(0);
+    expect(allBuckets[3].totalDeposit).equal(parseUnits("160"));
+
+    await scriptEngine.setBucketRevert(allBuckets[4].bucketID);
+    await stMTRG.transferFund(user4.address);
+    allBuckets = await stMTRG.allBuckets();
+    expect(allBuckets[3].totalDeposit).equal(0);
     expect(allBuckets[0].totalDeposit).equal(parseUnits("160"));
-    await stMTRG.transferFund(user1.address);
-    allBuckets = await stMTRG.allBuckets();
-    expect(allBuckets[1].totalDeposit).equal(parseUnits("160"));
   });
+
+  // async function getBucket() {
+  //   const allBuckets = await stMTRG.allBuckets();
+  //   for (let i = 0; i < allBuckets.length; i++) {
+  //     console.log(
+  //       "bucketAmount"+(i+1),
+  //       await scriptEngine.bucket(
+  //         await scriptEngine.bucketUser(allBuckets[i].bucketID),
+  //         allBuckets[i].bucketID
+  //       )
+  //     );
+  //   }
+  //   console.log("")
+  // }
   it("deleteBucket", async function() {
     const candidates = await stMTRG.candidates();
+
+    let bucket1 = await stMTRG.candidateToBucket(user1.address);
+    let bucket1totalDeposit = bucket1.totalDeposit;
+    let bucket1locked = bucket1.locked;
+
+    let bucket2 = await stMTRG.candidateToBucket(user2.address);
+    let bucket2totalDeposit = bucket2.totalDeposit;
+    let bucket2locked = bucket2.locked;
+
+    let bucket3 = await stMTRG.candidateToBucket(user3.address);
+    let bucket3totalDeposit = bucket3.totalDeposit;
+    let bucket3locked = bucket3.locked;
+
+    let bucket4 = await stMTRG.candidateToBucket(user4.address);
+    let bucket4totalDeposit = bucket4.totalDeposit;
+
+    let bucket5 = await stMTRG.candidateToBucket(user5.address);
+    let bucket5totalDeposit = bucket5.totalDeposit;
+    let bucket5locked = bucket5.locked;
+
     await stMTRG.deleteBucket(user1.address);
-    expect((await stMTRG.candidates()).length).equal(candidates.length - 1);
+    bucket2 = await stMTRG.candidateToBucket(user2.address);
+    bucket2totalDeposit = bucket2totalDeposit
+      .add(bucket1totalDeposit)
+      .add(bucket1locked);
+    expect(bucket2.totalDeposit).equal(bucket2totalDeposit);
+
     await stMTRG.deleteBucket(user2.address);
+    bucket3 = await stMTRG.candidateToBucket(user3.address);
+    bucket3totalDeposit = bucket3totalDeposit
+      .add(bucket2totalDeposit)
+      .add(bucket2locked);
+    expect(bucket3.totalDeposit).equal(bucket3totalDeposit);
+
     await stMTRG.deleteBucket(user3.address);
-    await stMTRG.deleteBucket(user4.address);
+    bucket4 = await stMTRG.candidateToBucket(user4.address);
+    bucket4totalDeposit = bucket4totalDeposit
+      .add(bucket3totalDeposit)
+      .add(bucket3locked);
+    expect(bucket4.totalDeposit).equal(bucket4totalDeposit);
+
+    await expect(stMTRG.deleteBucket(user4.address)).to.be.revertedWith(
+      "no dst candidate!"
+    );
+    await stMTRG.deleteBucket(user5.address);
+    bucket4 = await stMTRG.candidateToBucket(user4.address);
+    bucket4totalDeposit = bucket4totalDeposit
+      .add(bucket5totalDeposit)
+      .add(bucket5locked);
+    expect(bucket4.totalDeposit).equal(bucket4totalDeposit);
   });
 
   it("deleteBucket", async function() {
@@ -263,6 +341,7 @@ describe("treasury tests", function() {
       mtrgBalanceBefore.add(stMTRGbalance)
     );
   });
+  
   it("executeClose", async function() {
     await expect(stMTRG.executeClose()).to.be.revertedWith("CLOSE_DURATION!");
   });
@@ -280,12 +359,8 @@ describe("treasury tests", function() {
   });
   it("withdraw", async function() {
     const mtrgBalanceBefore = await mtrg.balanceOf(deployer.address);
-    console.log("mtrgBalanceBefore:", mtrgBalanceBefore);
     let stMTRGbalance = await stMTRG.balanceOf(deployer.address);
-    console.log("stMTRGbalance:", stMTRGbalance);
     await stMTRG.withdrawAll(deployer.address);
-    console.log("after:", await mtrg.balanceOf(deployer.address));
-    console.log("stMTRG:", await mtrg.balanceOf(stMTRG.address));
     expect(await mtrg.balanceOf(deployer.address)).equal(
       mtrgBalanceBefore.add(stMTRGbalance)
     );

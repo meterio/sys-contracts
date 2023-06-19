@@ -13,6 +13,7 @@ contract MockScriptEngine {
     mapping(address => mapping(bytes32 => uint256)) public bucket;
     mapping(address => uint256) balance;
     EnumerableSet.Bytes32Set buckets;
+    mapping(bytes32 => bool) public bucketRevert;
 
     constructor(MockMTRG _MTRG) {
         MTRG = _MTRG;
@@ -43,7 +44,11 @@ contract MockScriptEngine {
      * this func adds more value to the designated bucket owned by msg.sender
      * will revert if any error happens
      */
-    function bucketDeposit(bytes32 bucketID, uint256 amount) public returns(bool){
+    function bucketDeposit(
+        bytes32 bucketID,
+        uint256 amount
+    ) public returns (bool) {
+        require(!bucketRevert[bucketID], "bucket revert");
         require(bucket[msg.sender][bucketID] > 0, "bucket not exist!");
         MTRG.move(msg.sender, address(this), amount);
         bucket[msg.sender][bucketID] += amount;
@@ -109,10 +114,12 @@ contract MockScriptEngine {
         bytes32 fromBucketID,
         bytes32 toBucketID,
         uint256 amount
-    ) public {
+    ) public returns (bool) {
+        require(!bucketRevert[toBucketID], "bucket revert");
         require(bucket[msg.sender][fromBucketID] > 100 ether, "100 ether");
         bucket[msg.sender][fromBucketID] -= amount;
         bucket[msg.sender][toBucketID] += amount;
+        return true;
     }
 
     /**
@@ -120,10 +127,13 @@ contract MockScriptEngine {
      * remove `fromBucket` from listing
      * will revert if any error happens
      */
-    function bucketMerge(bytes32 fromBucketID, bytes32 toBucketID) public {
-        uint256 amount = bucket[msg.sender][fromBucketID];
-        bucket[msg.sender][fromBucketID] = 0;
-        bucket[msg.sender][toBucketID] += amount;
+    function bucketMerge(bytes32 fromBucketID, bytes32 toBucketID) public returns(bool) {
+        require(!bucketRevert[toBucketID], "bucket revert");
+        address bucketAccount = bucketUser[fromBucketID];
+        uint256 amount = bucket[bucketAccount][fromBucketID];
+        bucket[bucketAccount][fromBucketID] = 0;
+        bucket[bucketAccount][toBucketID] += amount;
+        return true;
     }
 
     /**
@@ -131,5 +141,9 @@ contract MockScriptEngine {
      */
     function bucketValue(bytes32 bucketID) public view returns (uint256) {
         return bucket[msg.sender][bucketID];
+    }
+
+    function setBucketRevert(bytes32 bucketID) public {
+        bucketRevert[bucketID] = !bucketRevert[bucketID];
     }
 }
