@@ -19,19 +19,27 @@ contract ScriptEngineV2  {
      * this func create a bucket from msg.sender, voted to candidate
      * will revert if any error happens
      */
-    function bucketOpen(address candidate, uint256 amount) public returns (bytes32 bktID) {
+    function bucketOpen(address candidate, uint256 amount) public returns (bytes32 bktID, bool success) {
         string memory errMsg;
         (bktID,errMsg) = _meterTracker.native_bucket_open(msg.sender, candidate, amount);
+        if (keccak256(abi.encodePacked(errMsg)) == keccak256(abi.encodePacked("candidate's accumulated votes > 100x candidate's own vote"))){
+            return (bktID, false);
+        }
         require((keccak256(abi.encodePacked((errMsg))) == keccak256(abi.encodePacked(("")))), errMsg);
+        return (bktID, true);
     }
 
     /**
      * this func adds more value to the designated bucket owned by msg.sender
      * will revert if any error happens
      */
-    function bucketDeposit( bytes32 bucketID, uint256 amount) public {
+    function bucketDeposit( bytes32 bucketID, uint256 amount) public returns (bool success) {
         string memory errMsg = _meterTracker.native_bucket_deposit(msg.sender, bucketID, amount);
+        if (keccak256(abi.encodePacked(errMsg)) == keccak256(abi.encodePacked("candidate's accumulated votes > 100x candidate's own vote"))){
+            return false;
+        }
         require((keccak256(abi.encodePacked((errMsg))) == keccak256(abi.encodePacked(("")))), errMsg);
+        return true;
     }
 
     /**
@@ -58,18 +66,26 @@ contract ScriptEngineV2  {
      * this func set candidate for the designated bucket owned by msg.sender
      * will revert if any error happens
      */
-    function bucketUpdateCandidate(bytes32 bucketID, address newCandidateAddr) public{
+    function bucketUpdateCandidate(bytes32 bucketID, address newCandidateAddr) public returns (bool success) {
         string memory errMsg = _meterTracker.native_bucket_update_candidate(msg.sender, bucketID, newCandidateAddr);
+        if (keccak256(abi.encodePacked(errMsg)) == keccak256(abi.encodePacked("candidate's accumulated votes > 100x candidate's own vote"))){
+            return false;
+        }
         require((keccak256(abi.encodePacked((errMsg))) == keccak256(abi.encodePacked(("")))), errMsg);
+        return true;
     }
 
     /**
      * this func transfer fund from the designated `fromBucket` to `toBucket` owned by msg.sender
      * will revert if any error happens
      */
-    function bucketTransferFund( bytes32 fromBucketID, bytes32 toBucketID, uint256 amount) public {
+    function bucketTransferFund( bytes32 fromBucketID, bytes32 toBucketID, uint256 amount) public returns (bool success) {
         string memory errMsg = _meterTracker.native_bucket_transfer_fund(msg.sender, fromBucketID, toBucketID, amount);
+        if (keccak256(abi.encodePacked(errMsg)) == keccak256(abi.encodePacked("candidate's accumulated votes > 100x candidate's own vote"))){
+            return false;
+        }
         require((keccak256(abi.encodePacked((errMsg))) == keccak256(abi.encodePacked(("")))), errMsg);
+        return true;
     }
 
     /**
@@ -77,9 +93,13 @@ contract ScriptEngineV2  {
      * remove `fromBucket` from listing
      * will revert if any error happens
      */
-    function bucketMerge(bytes32 fromBucketID, bytes32 toBucketID) public {
+    function bucketMerge(bytes32 fromBucketID, bytes32 toBucketID) public returns (bool success) {
         string memory errMsg = _meterTracker.native_bucket_merge(msg.sender, fromBucketID, toBucketID);
+        if (keccak256(abi.encodePacked(errMsg)) == keccak256(abi.encodePacked("candidate's accumulated votes > 100x candidate's own vote"))){
+            return false;
+        }
         require((keccak256(abi.encodePacked((errMsg))) == keccak256(abi.encodePacked(("")))), errMsg);
+        return true;
     }
 
     /**
@@ -88,7 +108,6 @@ contract ScriptEngineV2  {
     function bucketValue(bytes32 bucketID) public view returns (uint256) {
         return _meterTracker.native_bucket_value(bucketID);
     }
-
 
 
     function boundedMTRG() public view returns (uint256){
