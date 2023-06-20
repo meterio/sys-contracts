@@ -415,7 +415,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
     "ExecuteClost(address,bytes32,uint256)": EventFragment;
     "Initialized(uint8)": EventFragment;
     "LogRebase(bytes32,address,uint256,uint256)": EventFragment;
-    "Merge(bytes32,bytes32,uint256)": EventFragment;
+    "Merge(bytes32,bytes32,uint256,uint256)": EventFragment;
     "NewCandidate(address,bytes32)": EventFragment;
     "Paused(address)": EventFragment;
     "RequestClost(address,bytes32,uint256)": EventFragment;
@@ -2036,7 +2036,8 @@ export class StMTRG extends Contract {
     Merge(
       oldBucketID: BytesLike | null,
       newBucketID: BytesLike | null,
-      amount: null
+      totalDeposit: null,
+      locked: null
     ): EventFilter;
 
     NewCandidate(candidate: string | null, bucketID: null): EventFilter;

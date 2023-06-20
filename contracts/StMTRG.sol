@@ -65,7 +65,8 @@ contract StMTRG is
     event Merge(
         bytes32 indexed oldBucketID,
         bytes32 indexed newBucketID,
-        uint256 amount
+        uint256 totalDeposit,
+        uint256 locked
     );
     event RequestClost(
         address indexed candidate,
@@ -111,17 +112,6 @@ contract StMTRG is
         require(bucket.bucketID == bytes32(0), "candidate exsited!");
         address account = msg.sender;
         uint256 amount = 100 ether;
-        MTRG.transferFrom(account, address(this), amount);
-        (bytes32 bucketID,) = scriptEngine.bucketOpen(candidate, amount);
-
-        bucket.locked += amount;
-        bucket.bucketID = bucketID;
-
-        _candidates.push(candidate);
-        candidateIndex[candidate] = _candidates.length;
-        bucketIDToCandidate[bucketID] = candidate;
-        emit NewCandidate(candidate, bucketID);
-
         if (_totalShares == 0) {
             _shares[account] += amount.wadToRay();
             _totalShares += amount.wadToRay();
@@ -130,6 +120,15 @@ contract StMTRG is
             _shares[account] += shares_;
             _totalShares += shares_;
         }
+        MTRG.transferFrom(account, address(this), amount);
+        (bytes32 bucketID, ) = scriptEngine.bucketOpen(candidate, amount);
+        bucket.locked += amount;
+        bucket.bucketID = bucketID;
+
+        _candidates.push(candidate);
+        candidateIndex[candidate] = _candidates.length;
+        bucketIDToCandidate[bucketID] = candidate;
+        emit NewCandidate(candidate, bucketID);
         emit Transfer(address(0x0), account, amount);
         emit Deposit(account, bucketID, amount);
     }
@@ -196,9 +195,10 @@ contract StMTRG is
         Bucket storage bucket = candidateToBucket[
             _candidates[_candidateIndex - 1]
         ];
-        uint256 amount = bucket.totalDeposit + bucket.locked;
+        uint256 totalDeposit = bucket.totalDeposit;
+        uint256 locked = bucket.locked;
         bytes32 bucketID = bucket.bucketID;
-        if (amount > 0) {
+        if (totalDeposit + locked > 0) {
             bool success;
             bytes memory data;
 
@@ -231,8 +231,14 @@ contract StMTRG is
                 );
                 _candidateIndex++;
                 if (success && abi.decode(data, (bool))) {
-                    nextBucket.totalDeposit += amount;
-                    emit Merge(bucket.bucketID, nextBucket.bucketID, amount);
+                    nextBucket.totalDeposit += totalDeposit;
+                    nextBucket.locked += locked;
+                    emit Merge(
+                        bucket.bucketID,
+                        nextBucket.bucketID,
+                        totalDeposit,
+                        locked
+                    );
                     break;
                 }
             }
@@ -341,10 +347,8 @@ contract StMTRG is
             "ERC20: burn amount exceeds balance"
         );
         require(!_blackList[account], "account is in black list");
-        unchecked {
-            _shares[account] = accountShares.raySub(burnShares);
-            _totalShares = _totalShares.raySub(burnShares);
-        }
+        _shares[account] = accountShares.raySub(burnShares);
+        _totalShares = _totalShares.raySub(burnShares);
         emit Transfer(account, address(0), amount);
         for (uint256 i; i < _candidates.length; ++i) {
             currentIndex = currentIndex >= _candidates.length
@@ -370,7 +374,8 @@ contract StMTRG is
         }
         if (amount > 0) {
             uint256 balance = MTRG.balanceOf(address(this));
-            MTRG.transfer(recipient, balance < amount ? balance : amount);
+            require(balance >= amount, "Insufficient balance");
+            MTRG.transfer(recipient, amount);
             emit Withdraw(account, bytes32(0), amount);
         }
     }
@@ -402,7 +407,7 @@ contract StMTRG is
     }
 
     function totalShares() public view returns (uint256) {
-        return _totalShares.rayToWad();
+        return _totalShares;
     }
 
     function shares(address account) public view returns (uint256) {

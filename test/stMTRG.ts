@@ -87,6 +87,8 @@ describe("treasury tests", function() {
     await mtrg.connect(deployer).approve(stMTRG.address, depositAmount);
     receipt = await stMTRG.connect(deployer).newCandidate(user1.address);
     expect(await stMTRG.balanceOf(deployer.address)).equal(depositAmount);
+    console.log("shares:", await stMTRG.shares(deployer.address));
+    console.log("total shares:", await stMTRG.totalShares());
   });
   // newCandidate 2
   it("newCandidate 2", async function() {
@@ -95,6 +97,8 @@ describe("treasury tests", function() {
     expect(await stMTRG.balanceOf(deployer.address)).equal(
       depositAmount.mul(2)
     );
+    console.log("shares:", await stMTRG.shares(deployer.address));
+    console.log("total shares:", await stMTRG.totalShares());
   });
   // newCandidate 3
   it("newCandidate 3", async function() {
@@ -103,6 +107,8 @@ describe("treasury tests", function() {
     expect(await stMTRG.balanceOf(deployer.address)).equal(
       depositAmount.mul(3)
     );
+    console.log("shares:", await stMTRG.shares(deployer.address));
+    console.log("total shares:", await stMTRG.totalShares());
   });
   // newCandidate 4
   it("newCandidate 4", async function() {
@@ -111,6 +117,8 @@ describe("treasury tests", function() {
     expect(await stMTRG.balanceOf(deployer.address)).equal(
       depositAmount.mul(4)
     );
+    console.log("shares:", await stMTRG.shares(deployer.address));
+    console.log("total shares:", await stMTRG.totalShares());
   });
   // newCandidate 5
   it("newCandidate 5", async function() {
@@ -119,6 +127,8 @@ describe("treasury tests", function() {
     expect(await stMTRG.balanceOf(deployer.address)).equal(
       depositAmount.mul(5)
     );
+    console.log("shares:", await stMTRG.shares(deployer.address));
+    console.log("total shares:", await stMTRG.totalShares());
   });
 
   it("value2share", async function() {
@@ -277,6 +287,7 @@ describe("treasury tests", function() {
 
     let bucket4 = await stMTRG.candidateToBucket(user4.address);
     let bucket4totalDeposit = bucket4.totalDeposit;
+    let bucket4locked = bucket4.locked;
 
     let bucket5 = await stMTRG.candidateToBucket(user5.address);
     let bucket5totalDeposit = bucket5.totalDeposit;
@@ -284,34 +295,34 @@ describe("treasury tests", function() {
 
     await stMTRG.deleteBucket(user1.address);
     bucket2 = await stMTRG.candidateToBucket(user2.address);
-    bucket2totalDeposit = bucket2totalDeposit
-      .add(bucket1totalDeposit)
-      .add(bucket1locked);
+    bucket2totalDeposit = bucket2totalDeposit.add(bucket1totalDeposit)
+    bucket2locked = bucket2locked.add(bucket1locked)
     expect(bucket2.totalDeposit).equal(bucket2totalDeposit);
+    expect(bucket2.locked).equal(bucket2locked);
 
     await stMTRG.deleteBucket(user2.address);
     bucket3 = await stMTRG.candidateToBucket(user3.address);
-    bucket3totalDeposit = bucket3totalDeposit
-      .add(bucket2totalDeposit)
-      .add(bucket2locked);
+    bucket3totalDeposit = bucket3totalDeposit.add(bucket2totalDeposit)
+    bucket3locked = bucket3locked.add(bucket2locked)
     expect(bucket3.totalDeposit).equal(bucket3totalDeposit);
+    expect(bucket3.locked).equal(bucket3locked);
 
     await stMTRG.deleteBucket(user3.address);
     bucket4 = await stMTRG.candidateToBucket(user4.address);
-    bucket4totalDeposit = bucket4totalDeposit
-      .add(bucket3totalDeposit)
-      .add(bucket3locked);
+    bucket4totalDeposit = bucket4totalDeposit.add(bucket3totalDeposit)
+    bucket4locked = bucket4locked.add(bucket3locked)
     expect(bucket4.totalDeposit).equal(bucket4totalDeposit);
+    expect(bucket4.locked).equal(bucket4locked);
 
     await expect(stMTRG.deleteBucket(user4.address)).to.be.revertedWith(
       "no dst candidate!"
     );
     await stMTRG.deleteBucket(user5.address);
     bucket4 = await stMTRG.candidateToBucket(user4.address);
-    bucket4totalDeposit = bucket4totalDeposit
-      .add(bucket5totalDeposit)
-      .add(bucket5locked);
+    bucket4totalDeposit = bucket4totalDeposit.add(bucket5totalDeposit)
+    bucket4locked = bucket4locked.add(bucket5locked)
     expect(bucket4.totalDeposit).equal(bucket4totalDeposit);
+    expect(bucket4.locked).equal(bucket4locked);
   });
 
   it("deleteBucket", async function() {
@@ -341,7 +352,7 @@ describe("treasury tests", function() {
       mtrgBalanceBefore.add(stMTRGbalance)
     );
   });
-  
+
   it("executeClose", async function() {
     await expect(stMTRG.executeClose()).to.be.revertedWith("CLOSE_DURATION!");
   });

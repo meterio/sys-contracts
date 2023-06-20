@@ -3,13 +3,12 @@ import { ethers } from "hardhat";
 import { Verify } from "./Verify";
 import { Misc } from "./Misc";
 import { StMTRG } from "../typechain";
-const candidatesIndex = 2;
+const candidatesIndex = "01";
 async function main() {
   const signer = (await ethers.getSigners())[0];
   const chainId = await signer.getChainId();
   const MTRG = Misc.getContract(chainId, "MTRG");
   const ScriptEngine = Misc.getContract(chainId, "ScriptEngine");
-  const Candidates = Misc.getContract(chainId, "Candidates");
   let proxyAdmin = Misc.getContract(chainId, "ProxyAdmin");
 
   if (proxyAdmin.address == ethers.constants.AddressZero) {
