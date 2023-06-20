@@ -3,29 +3,45 @@
 
 pragma solidity ^0.8.0;
 
-
 /**
  * Implementation of ScriptEngine system contract that depends on MeterNativeV3
  */
 
 import "./MeterNativeV4.sol";
 
-contract ScriptEngineV2  {
+contract ScriptEngineV2 {
     MeterNativeV4 _meterTracker =
         MeterNativeV4(0x0000000000000000004D657465724e6174697665);
-
 
     /**
      * this func create a bucket from msg.sender, voted to candidate
      * will revert if any error happens
      */
-    function bucketOpen(address candidate, uint256 amount) public returns (bytes32 bktID, bool success) {
+    function bucketOpen(
+        address candidate,
+        uint256 amount
+    ) public returns (bytes32 bktID, bool success) {
         string memory errMsg;
-        (bktID,errMsg) = _meterTracker.native_bucket_open(msg.sender, candidate, amount);
-        if (keccak256(abi.encodePacked(errMsg)) == keccak256(abi.encodePacked("candidate's accumulated votes > 100x candidate's own vote"))){
+        (bktID, errMsg) = _meterTracker.native_bucket_open(
+            msg.sender,
+            candidate,
+            amount
+        );
+        if (
+            keccak256(abi.encodePacked(errMsg)) ==
+            keccak256(
+                abi.encodePacked(
+                    "candidate's accumulated votes > 100x candidate's own vote"
+                )
+            )
+        ) {
             return (bktID, false);
         }
-        require((keccak256(abi.encodePacked((errMsg))) == keccak256(abi.encodePacked(("")))), errMsg);
+        require(
+            (keccak256(abi.encodePacked((errMsg))) ==
+                keccak256(abi.encodePacked(("")))),
+            errMsg
+        );
         return (bktID, true);
     }
 
@@ -33,12 +49,30 @@ contract ScriptEngineV2  {
      * this func adds more value to the designated bucket owned by msg.sender
      * will revert if any error happens
      */
-    function bucketDeposit( bytes32 bucketID, uint256 amount) public returns (bool success) {
-        string memory errMsg = _meterTracker.native_bucket_deposit(msg.sender, bucketID, amount);
-        if (keccak256(abi.encodePacked(errMsg)) == keccak256(abi.encodePacked("candidate's accumulated votes > 100x candidate's own vote"))){
+    function bucketDeposit(
+        bytes32 bucketID,
+        uint256 amount
+    ) public returns (bool success) {
+        string memory errMsg = _meterTracker.native_bucket_deposit(
+            msg.sender,
+            bucketID,
+            amount
+        );
+        if (
+            keccak256(abi.encodePacked(errMsg)) ==
+            keccak256(
+                abi.encodePacked(
+                    "candidate's accumulated votes > 100x candidate's own vote"
+                )
+            )
+        ) {
             return false;
         }
-        require((keccak256(abi.encodePacked((errMsg))) == keccak256(abi.encodePacked(("")))), errMsg);
+        require(
+            (keccak256(abi.encodePacked((errMsg))) ==
+                keccak256(abi.encodePacked(("")))),
+            errMsg
+        );
         return true;
     }
 
@@ -47,10 +81,23 @@ contract ScriptEngineV2  {
      * `recipient` will receive funds after bucket mature time
      * will revert if any error happens
      */
-    function bucketWithdraw( bytes32 bucketID, uint256 amount, address recipient) public returns (bytes32 newBktID){
+    function bucketWithdraw(
+        bytes32 bucketID,
+        uint256 amount,
+        address recipient
+    ) public returns (bytes32 newBktID) {
         string memory errMsg;
-        (newBktID, errMsg) = _meterTracker.native_bucket_withdraw(msg.sender, bucketID, amount, recipient);
-        require((keccak256(abi.encodePacked((errMsg))) == keccak256(abi.encodePacked(("")))), errMsg);
+        (newBktID, errMsg) = _meterTracker.native_bucket_withdraw(
+            msg.sender,
+            bucketID,
+            amount,
+            recipient
+        );
+        require(
+            (keccak256(abi.encodePacked((errMsg))) ==
+                keccak256(abi.encodePacked(("")))),
+            errMsg
+        );
     }
 
     /**
@@ -58,20 +105,46 @@ contract ScriptEngineV2  {
      * `owner` will receive funds after bucket mature time
      * will revert if any error happens
      */
-    function bucketClose( bytes32 bucketID) public {
-        string memory errMsg = _meterTracker.native_bucket_close(msg.sender, bucketID);
-        require((keccak256(abi.encodePacked((errMsg))) == keccak256(abi.encodePacked(("")))), errMsg);
+    function bucketClose(bytes32 bucketID) public {
+        string memory errMsg = _meterTracker.native_bucket_close(
+            msg.sender,
+            bucketID
+        );
+        require(
+            (keccak256(abi.encodePacked((errMsg))) ==
+                keccak256(abi.encodePacked(("")))),
+            errMsg
+        );
     }
+
     /**
      * this func set candidate for the designated bucket owned by msg.sender
      * will revert if any error happens
      */
-    function bucketUpdateCandidate(bytes32 bucketID, address newCandidateAddr) public returns (bool success) {
-        string memory errMsg = _meterTracker.native_bucket_update_candidate(msg.sender, bucketID, newCandidateAddr);
-        if (keccak256(abi.encodePacked(errMsg)) == keccak256(abi.encodePacked("candidate's accumulated votes > 100x candidate's own vote"))){
+    function bucketUpdateCandidate(
+        bytes32 bucketID,
+        address newCandidateAddr
+    ) public returns (bool success) {
+        string memory errMsg = _meterTracker.native_bucket_update_candidate(
+            msg.sender,
+            bucketID,
+            newCandidateAddr
+        );
+        if (
+            keccak256(abi.encodePacked(errMsg)) ==
+            keccak256(
+                abi.encodePacked(
+                    "candidate's accumulated votes > 100x candidate's own vote"
+                )
+            )
+        ) {
             return false;
         }
-        require((keccak256(abi.encodePacked((errMsg))) == keccak256(abi.encodePacked(("")))), errMsg);
+        require(
+            (keccak256(abi.encodePacked((errMsg))) ==
+                keccak256(abi.encodePacked(("")))),
+            errMsg
+        );
         return true;
     }
 
@@ -79,12 +152,32 @@ contract ScriptEngineV2  {
      * this func transfer fund from the designated `fromBucket` to `toBucket` owned by msg.sender
      * will revert if any error happens
      */
-    function bucketTransferFund( bytes32 fromBucketID, bytes32 toBucketID, uint256 amount) public returns (bool success) {
-        string memory errMsg = _meterTracker.native_bucket_transfer_fund(msg.sender, fromBucketID, toBucketID, amount);
-        if (keccak256(abi.encodePacked(errMsg)) == keccak256(abi.encodePacked("candidate's accumulated votes > 100x candidate's own vote"))){
+    function bucketTransferFund(
+        bytes32 fromBucketID,
+        bytes32 toBucketID,
+        uint256 amount
+    ) public returns (bool success) {
+        string memory errMsg = _meterTracker.native_bucket_transfer_fund(
+            msg.sender,
+            fromBucketID,
+            toBucketID,
+            amount
+        );
+        if (
+            keccak256(abi.encodePacked(errMsg)) ==
+            keccak256(
+                abi.encodePacked(
+                    "candidate's accumulated votes > 100x candidate's own vote"
+                )
+            )
+        ) {
             return false;
         }
-        require((keccak256(abi.encodePacked((errMsg))) == keccak256(abi.encodePacked(("")))), errMsg);
+        require(
+            (keccak256(abi.encodePacked((errMsg))) ==
+                keccak256(abi.encodePacked(("")))),
+            errMsg
+        );
         return true;
     }
 
@@ -93,12 +186,30 @@ contract ScriptEngineV2  {
      * remove `fromBucket` from listing
      * will revert if any error happens
      */
-    function bucketMerge(bytes32 fromBucketID, bytes32 toBucketID) public returns (bool success) {
-        string memory errMsg = _meterTracker.native_bucket_merge(msg.sender, fromBucketID, toBucketID);
-        if (keccak256(abi.encodePacked(errMsg)) == keccak256(abi.encodePacked("candidate's accumulated votes > 100x candidate's own vote"))){
+    function bucketMerge(
+        bytes32 fromBucketID,
+        bytes32 toBucketID
+    ) public returns (bool success) {
+        string memory errMsg = _meterTracker.native_bucket_merge(
+            msg.sender,
+            fromBucketID,
+            toBucketID
+        );
+        if (
+            keccak256(abi.encodePacked(errMsg)) ==
+            keccak256(
+                abi.encodePacked(
+                    "candidate's accumulated votes > 100x candidate's own vote"
+                )
+            )
+        ) {
             return false;
         }
-        require((keccak256(abi.encodePacked((errMsg))) == keccak256(abi.encodePacked(("")))), errMsg);
+        require(
+            (keccak256(abi.encodePacked((errMsg))) ==
+                keccak256(abi.encodePacked(("")))),
+            errMsg
+        );
         return true;
     }
 
@@ -109,8 +220,7 @@ contract ScriptEngineV2  {
         return _meterTracker.native_bucket_value(bucketID);
     }
 
-
-    function boundedMTRG() public view returns (uint256){
+    function boundedMTRG() public view returns (uint256) {
         return _meterTracker.native_mtrg_locked_get(msg.sender);
     }
 }

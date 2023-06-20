@@ -11,7 +11,7 @@ interface IScriptEngine {
     function bucketOpen(
         address candidate,
         uint256 amount
-    ) external returns (bytes32 bktID);
+    ) external returns (bytes32 bktID, bool success);
 
     /**
      * this func adds more value to the designated bucket owned by msg.sender
@@ -43,7 +43,7 @@ interface IScriptEngine {
     function bucketUpdateCandidate(
         bytes32 bucketID,
         address newCandidateAddr
-    ) external;
+    ) external returns (bool success);
 
     function boundedMTRG() external view returns (uint256);
 

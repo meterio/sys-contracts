@@ -74,7 +74,6 @@ interface StMTRGInterface extends ethers.utils.Interface {
     "transferFrom(address,address,uint256)": FunctionFragment;
     "transferFund(address)": FunctionFragment;
     "unpause()": FunctionFragment;
-    "updateCandidate(address,address)": FunctionFragment;
     "valueToShare(uint256)": FunctionFragment;
     "withdraw(uint256,address)": FunctionFragment;
     "withdrawAll(address)": FunctionFragment;
@@ -258,10 +257,6 @@ interface StMTRGInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "updateCandidate",
-    values: [string, string]
-  ): string;
-  encodeFunctionData(
     functionFragment: "valueToShare",
     values: [BigNumberish]
   ): string;
@@ -404,10 +399,6 @@ interface StMTRGInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "updateCandidate",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "valueToShare",
     data: BytesLike
@@ -1043,18 +1034,6 @@ export class StMTRG extends Contract {
 
     "unpause()"(overrides?: Overrides): Promise<ContractTransaction>;
 
-    updateCandidate(
-      oldCandidateAddr: string,
-      newCandidateAddr: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "updateCandidate(address,address)"(
-      oldCandidateAddr: string,
-      newCandidateAddr: string,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
     valueToShare(
       _value: BigNumberish,
       overrides?: CallOverrides
@@ -1535,18 +1514,6 @@ export class StMTRG extends Contract {
 
   "unpause()"(overrides?: Overrides): Promise<ContractTransaction>;
 
-  updateCandidate(
-    oldCandidateAddr: string,
-    newCandidateAddr: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "updateCandidate(address,address)"(
-    oldCandidateAddr: string,
-    newCandidateAddr: string,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
   valueToShare(
     _value: BigNumberish,
     overrides?: CallOverrides
@@ -2007,18 +1974,6 @@ export class StMTRG extends Contract {
     unpause(overrides?: CallOverrides): Promise<void>;
 
     "unpause()"(overrides?: CallOverrides): Promise<void>;
-
-    updateCandidate(
-      oldCandidateAddr: string,
-      newCandidateAddr: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "updateCandidate(address,address)"(
-      oldCandidateAddr: string,
-      newCandidateAddr: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     valueToShare(
       _value: BigNumberish,
@@ -2532,18 +2487,6 @@ export class StMTRG extends Contract {
 
     "unpause()"(overrides?: Overrides): Promise<BigNumber>;
 
-    updateCandidate(
-      oldCandidateAddr: string,
-      newCandidateAddr: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "updateCandidate(address,address)"(
-      oldCandidateAddr: string,
-      newCandidateAddr: string,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
     valueToShare(
       _value: BigNumberish,
       overrides?: CallOverrides
@@ -3006,18 +2949,6 @@ export class StMTRG extends Contract {
     unpause(overrides?: Overrides): Promise<PopulatedTransaction>;
 
     "unpause()"(overrides?: Overrides): Promise<PopulatedTransaction>;
-
-    updateCandidate(
-      oldCandidateAddr: string,
-      newCandidateAddr: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "updateCandidate(address,address)"(
-      oldCandidateAddr: string,
-      newCandidateAddr: string,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
 
     valueToShare(
       _value: BigNumberish,

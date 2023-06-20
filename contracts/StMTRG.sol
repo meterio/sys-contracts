@@ -112,7 +112,7 @@ contract StMTRG is
         address account = msg.sender;
         uint256 amount = 100 ether;
         MTRG.transferFrom(account, address(this), amount);
-        bytes32 bucketID = scriptEngine.bucketOpen(candidate, amount);
+        (bytes32 bucketID,) = scriptEngine.bucketOpen(candidate, amount);
 
         bucket.locked += amount;
         bucket.bucketID = bucketID;
@@ -146,25 +146,6 @@ contract StMTRG is
                 totalSupply()
             );
         }
-    }
-
-    function updateCandidate(
-        address oldCandidateAddr,
-        address newCandidateAddr
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) notClose {
-        require(newCandidateAddr != address(0), "address error!");
-        Bucket memory bucket = candidateToBucket[oldCandidateAddr];
-        scriptEngine.bucketUpdateCandidate(bucket.bucketID, newCandidateAddr);
-
-        candidateToBucket[newCandidateAddr] = bucket;
-        bucketIDToCandidate[bucket.bucketID] = newCandidateAddr;
-        uint256 index = candidateIndex[oldCandidateAddr];
-        _candidates[index - 1] = newCandidateAddr;
-        candidateIndex[newCandidateAddr] = index;
-        delete candidateIndex[oldCandidateAddr];
-        delete candidateToBucket[oldCandidateAddr];
-
-        emit UpdateCandidate(oldCandidateAddr, newCandidateAddr);
     }
 
     function transferFund(

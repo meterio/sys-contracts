@@ -96,6 +96,11 @@
           "internalType": "bytes32",
           "name": "bktID",
           "type": "bytes32"
+        },
+        {
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
         }
       ],
       "stateMutability": "nonpayable",
@@ -144,7 +149,13 @@
         }
       ],
       "name": "bucketUpdateCandidate",
-      "outputs": [],
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
+        }
+      ],
       "stateMutability": "nonpayable",
       "type": "function"
     },

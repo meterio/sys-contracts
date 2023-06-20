@@ -370,13 +370,23 @@ export class IScriptEngine extends Contract {
       candidate: string,
       amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<string>;
+    ): Promise<{
+      bktID: string;
+      success: boolean;
+      0: string;
+      1: boolean;
+    }>;
 
     "bucketOpen(address,uint256)"(
       candidate: string,
       amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<string>;
+    ): Promise<{
+      bktID: string;
+      success: boolean;
+      0: string;
+      1: boolean;
+    }>;
 
     bucketTransferFund(
       fromBucketID: BytesLike,
@@ -396,13 +406,13 @@ export class IScriptEngine extends Contract {
       bucketID: BytesLike,
       newCandidateAddr: string,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
 
     "bucketUpdateCandidate(bytes32,address)"(
       bucketID: BytesLike,
       newCandidateAddr: string,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
 
     bucketValue(
       bucketID: BytesLike,

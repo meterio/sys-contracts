@@ -499,13 +499,23 @@ export class MockScriptEngine extends Contract {
       candidate: string,
       amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<string>;
+    ): Promise<{
+      bucketID: string;
+      success: boolean;
+      0: string;
+      1: boolean;
+    }>;
 
     "bucketOpen(address,uint256)"(
       candidate: string,
       amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<string>;
+    ): Promise<{
+      bucketID: string;
+      success: boolean;
+      0: string;
+      1: boolean;
+    }>;
 
     bucketRevert(arg0: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 

@@ -346,63 +346,73 @@ export class ScriptEngineV2 extends Contract {
       bucketID: BytesLike,
       amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
 
     "bucketDeposit(bytes32,uint256)"(
       bucketID: BytesLike,
       amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
 
     bucketMerge(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
 
     "bucketMerge(bytes32,bytes32)"(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
 
     bucketOpen(
       candidate: string,
       amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<string>;
+    ): Promise<{
+      bktID: string;
+      success: boolean;
+      0: string;
+      1: boolean;
+    }>;
 
     "bucketOpen(address,uint256)"(
       candidate: string,
       amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<string>;
+    ): Promise<{
+      bktID: string;
+      success: boolean;
+      0: string;
+      1: boolean;
+    }>;
 
     bucketTransferFund(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
       amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
 
     "bucketTransferFund(bytes32,bytes32,uint256)"(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
       amount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
 
     bucketUpdateCandidate(
       bucketID: BytesLike,
       newCandidateAddr: string,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
 
     "bucketUpdateCandidate(bytes32,address)"(
       bucketID: BytesLike,
       newCandidateAddr: string,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
 
     bucketValue(
       bucketID: BytesLike,

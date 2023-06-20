@@ -26,7 +26,7 @@ contract MockScriptEngine {
     function bucketOpen(
         address candidate,
         uint256 amount
-    ) public returns (bytes32 bucketID) {
+    ) public returns (bytes32 bucketID, bool success) {
         bucketID = keccak256(abi.encode(msg.sender, candidate));
         require(
             bucket[msg.sender][bucketID] == 0 &&

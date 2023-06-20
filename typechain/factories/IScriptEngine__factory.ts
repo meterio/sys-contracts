@@ -111,6 +111,11 @@ const _abi = [
         name: "bktID",
         type: "bytes32",
       },
+      {
+        internalType: "bool",
+        name: "success",
+        type: "bool",
+      },
     ],
     stateMutability: "nonpayable",
     type: "function",
@@ -158,7 +163,13 @@ const _abi = [
       },
     ],
     name: "bucketUpdateCandidate",
-    outputs: [],
+    outputs: [
+      {
+        internalType: "bool",
+        name: "success",
+        type: "bool",
+      },
+    ],
     stateMutability: "nonpayable",
     type: "function",
   },
