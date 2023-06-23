@@ -234,7 +234,7 @@ contract StMTRG is
                     nextBucket.totalDeposit += totalDeposit;
                     nextBucket.locked += locked;
                     emit Merge(
-                        bucket.bucketID,
+                        bucketID,
                         nextBucket.bucketID,
                         totalDeposit,
                         locked
