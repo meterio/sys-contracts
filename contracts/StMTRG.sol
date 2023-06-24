@@ -367,8 +367,14 @@ contract StMTRG is
                 bucket.totalDeposit -= amount;
                 amount = 0;
             }
-            scriptEngine.bucketWithdraw(bucket.bucketID, sendAmount, recipient);
-            emit Withdraw(account, bucket.bucketID, sendAmount);
+            if (sendAmount > 0) {
+                scriptEngine.bucketWithdraw(
+                    bucket.bucketID,
+                    sendAmount,
+                    recipient
+                );
+                emit Withdraw(account, bucket.bucketID, sendAmount);
+            }
             if (amount == 0) break;
             currentIndex += 1;
         }
