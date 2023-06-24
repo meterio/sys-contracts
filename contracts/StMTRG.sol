@@ -375,8 +375,8 @@ contract StMTRG is
                 );
                 emit Withdraw(account, bucket.bucketID, sendAmount);
             }
-            if (amount == 0) break;
             currentIndex += 1;
+            if (amount == 0) break;
         }
         if (amount > 0) {
             uint256 balance = MTRG.balanceOf(address(this));
