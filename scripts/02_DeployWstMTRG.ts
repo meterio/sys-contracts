@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 import { Verify } from "./Verify";
 import { Misc } from "./Misc";
 import { WstMTRG } from "../typechain";
-const candidatesIndex = 2;
+const candidatesIndex = "01";
 async function main() {
   const signer = (await ethers.getSigners())[0];
   const chainId = await signer.getChainId();
