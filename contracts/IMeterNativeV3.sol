@@ -9,7 +9,8 @@ interface IMeterNativeV3 is IMeterNative {
     // added events for V3
     event Bound(address indexed owner, uint256 amount, uint256 token);
     event Unbound(address indexed owner, uint256 amount, uint256 token);
-    event NativeBucketWithdraw(address indexed owner, uint256 amount, uint256 token, address recipient);
+    // event NativeBucketWithdraw(address indexed owner, uint256 amount, uint256 token, address recipient, bytes32 fromBktId, bytes32 toBktId);
+
     // added functions for V3
     function native_bucket_open(address owner, address candidateAddr, uint256 amount) external returns (bytes32, string memory);
     function native_bucket_deposit(address owner, bytes32 bucketID, uint256 amount) external returns (string memory);
