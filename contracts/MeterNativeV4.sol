@@ -10,6 +10,8 @@ contract MeterNativeV4 is MeterNativeV3 {
      event NativeBucketMerge(address indexed owner, bytes32 fromBktID, bytes32 toBktID);
      event NativeBucketTransferFund(address indexed owner, bytes32 fromBktID, uint256 amount, uint256 token, bytes32 toBktID);
      event NativeBucketUpdateCandidate(address indexed owner, bytes32 bucketID, address fromCandidate, address toCandidate);
+     event NativeAuctionStart(bytes32 indexed id, uint256 startHeight, uint256 endHeight, uint256 mtrgOnAuction, uint256 reservedPrice);
+     event NativeAuctionEnd(bytes32 indexed id, uint256 receivedMTR, uint256 releasedMTRG, uint256 actualPrice);
 
      /**
      * this func transfers `amount` from `fromBucket` to `toBucket`
