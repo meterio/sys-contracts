@@ -38,6 +38,7 @@ contract MockScriptEngine {
         bucket[msg.sender][bucketID] += amount;
         balance[msg.sender] += amount;
         buckets.add(bucketID);
+        return (bucketID, true);
     }
 
     /**
@@ -127,7 +128,10 @@ contract MockScriptEngine {
      * remove `fromBucket` from listing
      * will revert if any error happens
      */
-    function bucketMerge(bytes32 fromBucketID, bytes32 toBucketID) public returns(bool) {
+    function bucketMerge(
+        bytes32 fromBucketID,
+        bytes32 toBucketID
+    ) public returns (bool) {
         require(!bucketRevert[toBucketID], "bucket revert");
         address bucketAccount = bucketUser[fromBucketID];
         uint256 amount = bucket[bucketAccount][fromBucketID];

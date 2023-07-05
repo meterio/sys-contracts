@@ -30,6 +30,7 @@ interface StMTRGInterface extends ethers.utils.Interface {
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
+    "boundedMTRG()": FunctionFragment;
     "bucketIDToCandidate(bytes32)": FunctionFragment;
     "bucketValue(bytes32)": FunctionFragment;
     "candidateIndex(address)": FunctionFragment;
@@ -105,6 +106,10 @@ interface StMTRGInterface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "boundedMTRG",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "bucketIDToCandidate",
     values: [BytesLike]
@@ -283,6 +288,10 @@ interface StMTRGInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "boundedMTRG",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "bucketIDToCandidate",
     data: BytesLike
@@ -557,6 +566,14 @@ export class StMTRG extends Contract {
       account: string,
       overrides?: CallOverrides
     ): Promise<{
+      0: BigNumber;
+    }>;
+
+    boundedMTRG(overrides?: CallOverrides): Promise<{
+      0: BigNumber;
+    }>;
+
+    "boundedMTRG()"(overrides?: CallOverrides): Promise<{
       0: BigNumber;
     }>;
 
@@ -1144,6 +1161,10 @@ export class StMTRG extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  boundedMTRG(overrides?: CallOverrides): Promise<BigNumber>;
+
+  "boundedMTRG()"(overrides?: CallOverrides): Promise<BigNumber>;
+
   bucketIDToCandidate(
     arg0: BytesLike,
     overrides?: CallOverrides
@@ -1619,6 +1640,10 @@ export class StMTRG extends Contract {
       account: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    boundedMTRG(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "boundedMTRG()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     bucketIDToCandidate(
       arg0: BytesLike,
@@ -2144,6 +2169,10 @@ export class StMTRG extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    boundedMTRG(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "boundedMTRG()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     bucketIDToCandidate(
       arg0: BytesLike,
       overrides?: CallOverrides
@@ -2580,6 +2609,10 @@ export class StMTRG extends Contract {
       account: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    boundedMTRG(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "boundedMTRG()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     bucketIDToCandidate(
       arg0: BytesLike,

@@ -121,7 +121,12 @@ contract StMTRG is
             _totalShares += shares_;
         }
         MTRG.transferFrom(account, address(this), amount);
-        (bytes32 bucketID, ) = scriptEngine.bucketOpen(candidate, amount);
+        (bytes32 bucketID, bool success) = scriptEngine.bucketOpen(
+            candidate,
+            amount
+        );
+        require(success, "bucketOpen error!");
+        require(bucketIDToCandidate[bucketID] == address(0), "bucketID error!");
         bucket.locked += amount;
         bucket.bucketID = bucketID;
 
@@ -281,7 +286,7 @@ contract StMTRG is
 
     function closeTerminal() public onlyRole(DEFAULT_ADMIN_ROLE) {
         require(inTerminal, "not in terminal!");
-        Bucket memory bucket = candidateToBucket[_candidates[currentIndex]];
+        Bucket memory bucket = candidateToBucket[_candidates[0]];
 
         delete candidateToBucket[_candidates[0]];
         delete bucketIDToCandidate[bucket.bucketID];
@@ -409,6 +414,17 @@ contract StMTRG is
      * @dev See {IERC20-totalSupply}.
      */
     function totalSupply() public view override returns (uint256) {
+        uint256 mrtgBalance = MTRG.balanceOf(address(this));
+        uint256 _totalSupply;
+        for (uint256 i = 0; i < _candidates.length; ++i) {
+            Bucket memory bucket = candidateToBucket[_candidates[i]];
+            _totalSupply += bucket.totalDeposit;
+            _totalSupply += bucket.locked;
+        }
+        return mrtgBalance + _totalSupply;
+    }
+
+    function boundedMTRG() public view returns (uint256) {
         return scriptEngine.boundedMTRG();
     }
 
@@ -438,13 +454,7 @@ contract StMTRG is
     }
 
     function shareToValue(uint256 _share) public view returns (uint256) {
-        uint256 _totalSupply = MTRG.balanceOf(address(this));
-        for (uint256 i = 0; i < _candidates.length; ++i) {
-            Bucket memory bucket = candidateToBucket[_candidates[i]];
-            _totalSupply += bucket.totalDeposit;
-            _totalSupply += bucket.locked;
-        }
-        return (_share.rayMul(_totalSupply)).rayDiv(_totalShares);
+        return (_share.rayMul(totalSupply())).rayDiv(_totalShares);
     }
 
     function valueToShare(uint256 _value) public view returns (uint256) {
@@ -452,13 +462,7 @@ contract StMTRG is
     }
 
     function _valueToShare(uint256 _value) private view returns (uint256) {
-        uint256 _totalSupply = MTRG.balanceOf(address(this));
-        for (uint256 i = 0; i < _candidates.length; ++i) {
-            Bucket memory bucket = candidateToBucket[_candidates[i]];
-            _totalSupply += bucket.totalDeposit;
-            _totalSupply += bucket.locked;
-        }
-        return _value.rayMul(_totalShares).rayDiv(_totalSupply);
+        return _value.rayMul(_totalShares).rayDiv(totalSupply());
     }
 
     function _transfer(

@@ -295,22 +295,22 @@ describe("treasury tests", function() {
 
     await stMTRG.deleteBucket(user1.address);
     bucket2 = await stMTRG.candidateToBucket(user2.address);
-    bucket2totalDeposit = bucket2totalDeposit.add(bucket1totalDeposit)
-    bucket2locked = bucket2locked.add(bucket1locked)
+    bucket2totalDeposit = bucket2totalDeposit.add(bucket1totalDeposit);
+    bucket2locked = bucket2locked.add(bucket1locked);
     expect(bucket2.totalDeposit).equal(bucket2totalDeposit);
     expect(bucket2.locked).equal(bucket2locked);
 
     await stMTRG.deleteBucket(user2.address);
     bucket3 = await stMTRG.candidateToBucket(user3.address);
-    bucket3totalDeposit = bucket3totalDeposit.add(bucket2totalDeposit)
-    bucket3locked = bucket3locked.add(bucket2locked)
+    bucket3totalDeposit = bucket3totalDeposit.add(bucket2totalDeposit);
+    bucket3locked = bucket3locked.add(bucket2locked);
     expect(bucket3.totalDeposit).equal(bucket3totalDeposit);
     expect(bucket3.locked).equal(bucket3locked);
 
     await stMTRG.deleteBucket(user3.address);
     bucket4 = await stMTRG.candidateToBucket(user4.address);
-    bucket4totalDeposit = bucket4totalDeposit.add(bucket3totalDeposit)
-    bucket4locked = bucket4locked.add(bucket3locked)
+    bucket4totalDeposit = bucket4totalDeposit.add(bucket3totalDeposit);
+    bucket4locked = bucket4locked.add(bucket3locked);
     expect(bucket4.totalDeposit).equal(bucket4totalDeposit);
     expect(bucket4.locked).equal(bucket4locked);
 
@@ -319,8 +319,8 @@ describe("treasury tests", function() {
     );
     await stMTRG.deleteBucket(user5.address);
     bucket4 = await stMTRG.candidateToBucket(user4.address);
-    bucket4totalDeposit = bucket4totalDeposit.add(bucket5totalDeposit)
-    bucket4locked = bucket4locked.add(bucket5locked)
+    bucket4totalDeposit = bucket4totalDeposit.add(bucket5totalDeposit);
+    bucket4locked = bucket4locked.add(bucket5locked);
     expect(bucket4.totalDeposit).equal(bucket4totalDeposit);
     expect(bucket4.locked).equal(bucket4locked);
   });
