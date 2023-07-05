@@ -3,6 +3,16 @@ pragma solidity ^0.8.0;
 import "./MeterNativeV3.sol";
 
 contract MeterNativeV4 is MeterNativeV3 {
+     event NativeBucketDeposit(address indexed owner, bytes32 bucketID, uint256 amount, uint256 token);
+     event NativeBucketWithdraw(address indexed owner, bytes32 fromBktID, uint256 amount, uint256 token, address recipient, bytes32 toBktID);
+     event NativeBucketOpen(address indexed owner, bytes32 bucketID, uint256 amount, uint256 token);
+     event NativeBucketClose(address indexed owner, bytes32 bucketID);
+     event NativeBucketMerge(address indexed owner, bytes32 fromBktID, bytes32 toBktID);
+     event NativeBucketTransferFund(address indexed owner, bytes32 fromBktID, uint256 amount, uint256 token, bytes32 toBktID);
+     event NativeBucketUpdateCandidate(address indexed owner, bytes32 bucketID, address fromCandidate, address toCandidate);
+     event NativeAuctionStart(bytes32 indexed id, uint256 startHeight, uint256 endHeight, uint256 mtrgOnAuction, uint256 reservedPrice);
+     event NativeAuctionEnd(bytes32 indexed id, uint256 receivedMTR, uint256 releasedMTRG, uint256 actualPrice);
+
      /**
      * this func transfers `amount` from `fromBucket` to `toBucket`
      * notice that `fromBucket` still needs to meet staking requirement after transfer
