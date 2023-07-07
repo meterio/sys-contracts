@@ -284,8 +284,9 @@ contract StMTRG is
         emit ExecuteClost(_candidates[0], bucket.bucketID, closeTimestamp);
     }
 
-    function closeTerminal() public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function closeTerminal() public {
         require(inTerminal, "not in terminal!");
+        require(boundedMTRG() == 0, "boundedMTRG > 0");
         Bucket memory bucket = candidateToBucket[_candidates[0]];
 
         delete candidateToBucket[_candidates[0]];

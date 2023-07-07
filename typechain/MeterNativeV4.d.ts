@@ -254,12 +254,30 @@ interface MeterNativeV4Interface extends ethers.utils.Interface {
   events: {
     "Bound(address,uint256,uint256)": EventFragment;
     "MeterTrackerEvent(address,uint256,string)": EventFragment;
-    "NativeBucketWithdraw(address,uint256,uint256,address)": EventFragment;
+    "NativeAuctionEnd(bytes32,uint256,uint256,uint256)": EventFragment;
+    "NativeAuctionStart(bytes32,uint256,uint256,uint256,uint256)": EventFragment;
+    "NativeBucketClose(address,bytes32)": EventFragment;
+    "NativeBucketDeposit(address,bytes32,uint256,uint256)": EventFragment;
+    "NativeBucketMerge(address,bytes32,bytes32)": EventFragment;
+    "NativeBucketOpen(address,bytes32,uint256,uint256)": EventFragment;
+    "NativeBucketTransferFund(address,bytes32,uint256,uint256,bytes32)": EventFragment;
+    "NativeBucketUpdateCandidate(address,bytes32,address,address)": EventFragment;
+    "NativeBucketWithdraw(address,bytes32,uint256,uint256,address,bytes32)": EventFragment;
     "Unbound(address,uint256,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Bound"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MeterTrackerEvent"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NativeAuctionEnd"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NativeAuctionStart"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NativeBucketClose"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NativeBucketDeposit"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NativeBucketMerge"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NativeBucketOpen"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NativeBucketTransferFund"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "NativeBucketUpdateCandidate"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NativeBucketWithdraw"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unbound"): EventFragment;
 }
@@ -1187,11 +1205,65 @@ export class MeterNativeV4 extends Contract {
       _method: null
     ): EventFilter;
 
-    NativeBucketWithdraw(
+    NativeAuctionEnd(
+      id: BytesLike | null,
+      receivedMTR: null,
+      releasedMTRG: null,
+      actualPrice: null
+    ): EventFilter;
+
+    NativeAuctionStart(
+      id: BytesLike | null,
+      startHeight: null,
+      endHeight: null,
+      mtrgOnAuction: null,
+      reservedPrice: null
+    ): EventFilter;
+
+    NativeBucketClose(owner: string | null, bucketID: null): EventFilter;
+
+    NativeBucketDeposit(
       owner: string | null,
+      bucketID: null,
+      amount: null,
+      token: null
+    ): EventFilter;
+
+    NativeBucketMerge(
+      owner: string | null,
+      fromBktID: null,
+      toBktID: null
+    ): EventFilter;
+
+    NativeBucketOpen(
+      owner: string | null,
+      bucketID: null,
+      amount: null,
+      token: null
+    ): EventFilter;
+
+    NativeBucketTransferFund(
+      owner: string | null,
+      fromBktID: null,
       amount: null,
       token: null,
-      recipient: null
+      toBktID: null
+    ): EventFilter;
+
+    NativeBucketUpdateCandidate(
+      owner: string | null,
+      bucketID: null,
+      fromCandidate: null,
+      toCandidate: null
+    ): EventFilter;
+
+    NativeBucketWithdraw(
+      owner: string | null,
+      fromBktID: null,
+      amount: null,
+      token: null,
+      recipient: null,
+      toBktID: null
     ): EventFilter;
 
     Unbound(owner: string | null, amount: null, token: null): EventFilter;

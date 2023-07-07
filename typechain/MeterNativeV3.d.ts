@@ -227,13 +227,11 @@ interface MeterNativeV3Interface extends ethers.utils.Interface {
   events: {
     "Bound(address,uint256,uint256)": EventFragment;
     "MeterTrackerEvent(address,uint256,string)": EventFragment;
-    "NativeBucketWithdraw(address,uint256,uint256,address)": EventFragment;
     "Unbound(address,uint256,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Bound"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "MeterTrackerEvent"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "NativeBucketWithdraw"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unbound"): EventFragment;
 }
 
@@ -1026,13 +1024,6 @@ export class MeterNativeV3 extends Contract {
       _address: null,
       _amount: null,
       _method: null
-    ): EventFilter;
-
-    NativeBucketWithdraw(
-      owner: string | null,
-      amount: null,
-      token: null,
-      recipient: null
     ): EventFilter;
 
     Unbound(owner: string | null, amount: null, token: null): EventFilter;
