@@ -33,7 +33,9 @@ contract ScriptEngineV2 {
                 abi.encodePacked(
                     "candidate's accumulated votes > 100x candidate's own vote"
                 )
-            )
+            ) ||
+            keccak256(abi.encodePacked(errMsg)) ==
+            keccak256(abi.encodePacked("candidate is jailed"))
         ) {
             return (bktID, false);
         }
@@ -64,7 +66,9 @@ contract ScriptEngineV2 {
                 abi.encodePacked(
                     "candidate's accumulated votes > 100x candidate's own vote"
                 )
-            )
+            ) ||
+            keccak256(abi.encodePacked(errMsg)) ==
+            keccak256(abi.encodePacked("candidate is jailed"))
         ) {
             return false;
         }
@@ -136,7 +140,9 @@ contract ScriptEngineV2 {
                 abi.encodePacked(
                     "candidate's accumulated votes > 100x candidate's own vote"
                 )
-            )
+            ) ||
+            keccak256(abi.encodePacked(errMsg)) ==
+            keccak256(abi.encodePacked("candidate is jailed"))
         ) {
             return false;
         }
@@ -169,7 +175,9 @@ contract ScriptEngineV2 {
                 abi.encodePacked(
                     "candidate's accumulated votes > 100x candidate's own vote"
                 )
-            )
+            ) ||
+            keccak256(abi.encodePacked(errMsg)) ==
+            keccak256(abi.encodePacked("candidate is jailed"))
         ) {
             return false;
         }
@@ -201,7 +209,9 @@ contract ScriptEngineV2 {
                 abi.encodePacked(
                     "candidate's accumulated votes > 100x candidate's own vote"
                 )
-            )
+            ) ||
+            keccak256(abi.encodePacked(errMsg)) ==
+            keccak256(abi.encodePacked("candidate is jailed"))
         ) {
             return false;
         }
@@ -222,5 +232,9 @@ contract ScriptEngineV2 {
 
     function boundedMTRG() public view returns (uint256) {
         return _meterTracker.native_mtrg_locked_get(msg.sender);
+    }
+
+    function bucketExists(bytes32 bucketID) public view returns (bool success) {
+        return _meterTracker.native_bucket_exists(bucketID);
     }
 }
