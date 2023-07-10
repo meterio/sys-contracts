@@ -24,6 +24,7 @@ interface MeterNativeV4Interface extends ethers.utils.Interface {
   functions: {
     "native_bucket_close(address,bytes32)": FunctionFragment;
     "native_bucket_deposit(address,bytes32,uint256)": FunctionFragment;
+    "native_bucket_exists(bytes32)": FunctionFragment;
     "native_bucket_merge(address,bytes32,bytes32)": FunctionFragment;
     "native_bucket_open(address,address,uint256)": FunctionFragment;
     "native_bucket_transfer_fund(address,bytes32,bytes32,uint256)": FunctionFragment;
@@ -56,6 +57,10 @@ interface MeterNativeV4Interface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "native_bucket_deposit",
     values: [string, BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "native_bucket_exists",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "native_bucket_merge",
@@ -156,6 +161,10 @@ interface MeterNativeV4Interface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "native_bucket_deposit",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "native_bucket_exists",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -328,6 +337,20 @@ export class MeterNativeV4 extends Contract {
       overrides?: CallOverrides
     ): Promise<{
       0: string;
+    }>;
+
+    native_bucket_exists(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: boolean;
+    }>;
+
+    "native_bucket_exists(bytes32)"(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      0: boolean;
     }>;
 
     native_bucket_merge(
@@ -667,6 +690,16 @@ export class MeterNativeV4 extends Contract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  native_bucket_exists(
+    bucketID: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  "native_bucket_exists(bytes32)"(
+    bucketID: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   native_bucket_merge(
     owner: string,
     fromBucketID: BytesLike,
@@ -942,6 +975,16 @@ export class MeterNativeV4 extends Contract {
       amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    native_bucket_exists(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "native_bucket_exists(bytes32)"(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
 
     native_bucket_merge(
       owner: string,
@@ -1296,6 +1339,16 @@ export class MeterNativeV4 extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    native_bucket_exists(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "native_bucket_exists(bytes32)"(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     native_bucket_merge(
       owner: string,
       fromBucketID: BytesLike,
@@ -1561,6 +1614,16 @@ export class MeterNativeV4 extends Contract {
       owner: string,
       bucketID: BytesLike,
       amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    native_bucket_exists(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "native_bucket_exists(bytes32)"(
+      bucketID: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

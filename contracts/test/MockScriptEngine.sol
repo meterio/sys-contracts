@@ -150,4 +150,8 @@ contract MockScriptEngine {
     function setBucketRevert(bytes32 bucketID) public {
         bucketRevert[bucketID] = !bucketRevert[bucketID];
     }
+
+    function bucketExists(bytes32 bucketID) public view returns (bool success) {
+        return bucket[msg.sender][bucketID] == 0;
+    }
 }

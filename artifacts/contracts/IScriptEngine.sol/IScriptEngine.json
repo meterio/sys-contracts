@@ -57,6 +57,25 @@
       "inputs": [
         {
           "internalType": "bytes32",
+          "name": "bucketID",
+          "type": "bytes32"
+        }
+      ],
+      "name": "bucketExists",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
           "name": "fromBucketID",
           "type": "bytes32"
         },

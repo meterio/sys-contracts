@@ -59,4 +59,8 @@ interface IScriptEngine {
     ) external returns (uint256);
 
     function bucketValue(bytes32 bucketID) external view returns (uint256);
+
+    function bucketExists(
+        bytes32 bucketID
+    ) external view returns (bool success);
 }

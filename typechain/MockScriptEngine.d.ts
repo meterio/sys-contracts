@@ -27,6 +27,7 @@ interface MockScriptEngineInterface extends ethers.utils.Interface {
     "bucket(address,bytes32)": FunctionFragment;
     "bucketClose(bytes32)": FunctionFragment;
     "bucketDeposit(bytes32,uint256)": FunctionFragment;
+    "bucketExists(bytes32)": FunctionFragment;
     "bucketMerge(bytes32,bytes32)": FunctionFragment;
     "bucketOpen(address,uint256)": FunctionFragment;
     "bucketRevert(bytes32)": FunctionFragment;
@@ -54,6 +55,10 @@ interface MockScriptEngineInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "bucketDeposit",
     values: [BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "bucketExists",
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "bucketMerge",
@@ -101,6 +106,10 @@ interface MockScriptEngineInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "bucketDeposit",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "bucketExists",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -201,6 +210,22 @@ export class MockScriptEngine extends Contract {
       amount: BigNumberish,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
+
+    bucketExists(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      success: boolean;
+      0: boolean;
+    }>;
+
+    "bucketExists(bytes32)"(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<{
+      success: boolean;
+      0: boolean;
+    }>;
 
     bucketMerge(
       fromBucketID: BytesLike,
@@ -353,6 +378,16 @@ export class MockScriptEngine extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
+  bucketExists(
+    bucketID: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  "bucketExists(bytes32)"(
+    bucketID: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   bucketMerge(
     fromBucketID: BytesLike,
     toBucketID: BytesLike,
@@ -480,6 +515,16 @@ export class MockScriptEngine extends Contract {
     "bucketDeposit(bytes32,uint256)"(
       bucketID: BytesLike,
       amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    bucketExists(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    "bucketExists(bytes32)"(
+      bucketID: BytesLike,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
@@ -626,6 +671,16 @@ export class MockScriptEngine extends Contract {
       overrides?: Overrides
     ): Promise<BigNumber>;
 
+    bucketExists(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    "bucketExists(bytes32)"(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     bucketMerge(
       fromBucketID: BytesLike,
       toBucketID: BytesLike,
@@ -761,6 +816,16 @@ export class MockScriptEngine extends Contract {
       bucketID: BytesLike,
       amount: BigNumberish,
       overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    bucketExists(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    "bucketExists(bytes32)"(
+      bucketID: BytesLike,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     bucketMerge(
