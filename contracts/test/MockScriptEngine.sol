@@ -152,6 +152,6 @@ contract MockScriptEngine {
     }
 
     function bucketExists(bytes32 bucketID) public view returns (bool success) {
-        return bucket[msg.sender][bucketID] == 0;
+        return bucket[msg.sender][bucketID] > 0;
     }
 }

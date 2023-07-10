@@ -287,7 +287,7 @@ contract StMTRG is
     function closeTerminal() public {
         require(inTerminal, "not in terminal!");
         Bucket memory bucket = candidateToBucket[_candidates[0]];
-        require(scriptEngine.bucketExists(bucket.bucketID));
+        require(!scriptEngine.bucketExists(bucket.bucketID),"bucket exists");
 
         delete candidateToBucket[_candidates[0]];
         delete bucketIDToCandidate[bucket.bucketID];
