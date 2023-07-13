@@ -138,7 +138,7 @@ contract StMTRG is
         emit Deposit(account, bucketID, amount);
     }
 
-    function rebase() public onlyRole(DEFAULT_ADMIN_ROLE) notClose {
+    function rebase() public notClose {
         uint256 mtrgBalance = MTRG.balanceOf(address(this));
         if (mtrgBalance > 0) {
             bytes32 bucketID = _deposit(address(0), mtrgBalance);
