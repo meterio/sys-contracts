@@ -3,6 +3,8 @@ import { ethers } from "hardhat";
 import { Verify } from "./Verify";
 import { Misc } from "./Misc";
 import { StMTRG } from "../typechain";
+import { unlinkSync } from "fs";
+
 const candidatesIndex = "01";
 async function main() {
   const signer = (await ethers.getSigners())[0];
@@ -10,6 +12,7 @@ async function main() {
   const MTRG = Misc.getContract(chainId, "MTRG");
   const ScriptEngine = Misc.getContract(chainId, "ScriptEngine");
   let proxyAdmin = Misc.getContract(chainId, "ProxyAdmin");
+  Misc.clear();
 
   if (proxyAdmin.address == ethers.constants.AddressZero) {
     proxyAdmin = await Deploy.deployContract(signer, "ProxyAdmin");
